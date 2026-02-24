@@ -3,7 +3,7 @@
 # Usage: ./scripts/swarm-prompt.sh "Ajoute l'authentification et un middleware de logs" [--model gpt-4o] [--test "make test"] ...
 #        echo "Refactoriser le module API" | ./scripts/swarm-prompt.sh --stdin [options...]
 # Prérequis: OPENAI_API_BASE (proxy LiteLLM), curl, jq. Optionnel: OPENAI_API_KEY si le proxy l'exige.
-# Les options --test, --on-conflict, --parallel sont transmises au coordinateur.
+# Les options --test, --validate, --rollback-on-validate-fail, --on-conflict, --parallel sont transmises au coordinateur.
 
 set -e
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -14,17 +14,33 @@ PROMPT_TEXT=""
 PIPELINE_OPTS=()
 USE_STDIN=""
 
+# Afficher l'aide sans exiger les prérequis (jq, etc.)
+for a in "$@"; do
+  [ "$a" = "-h" ] || [ "$a" = "--help" ] && {
+    echo "Usage: $0 \"<demande en langage naturel>\" [--model MODEL] [--test \"cmd\"] [--validate \"cmd\"] [--rollback-on-validate-fail] [--on-conflict skip|reopen] [--parallel]"
+    echo "       echo \"<demande>\" | $0 --stdin [options...]"
+    echo "  Décompose la demande en sous-tâches via le LLM (OPENAI_API_BASE) puis lance le coordinateur."
+    echo "  Options pipeline: --test, --validate, --rollback-on-validate-fail, --on-conflict, --parallel."
+    exit 0
+  }
+done
+
+"${REPO_ROOT}/scripts/swarm-check.sh" --require jq --quiet || exit 1
+
 while [ $# -gt 0 ]; do
   case "$1" in
     --stdin)   USE_STDIN=1; shift ;;
     --model)   MODEL="$2"; shift 2 ;;
     --test)    PIPELINE_OPTS+=(--test "$2"); shift 2 ;;
+    --validate) PIPELINE_OPTS+=(--validate "$2"); shift 2 ;;
+    --rollback-on-validate-fail) PIPELINE_OPTS+=(--rollback-on-validate-fail); shift ;;
     --on-conflict) PIPELINE_OPTS+=(--on-conflict "$2"); shift 2 ;;
     --parallel)    PIPELINE_OPTS+=(--parallel); shift ;;
     -h|--help)
-      echo "Usage: $0 \"<demande en langage naturel>\" [--model MODEL] [--test \"cmd\"] [--on-conflict skip|reopen] [--parallel]"
+      echo "Usage: $0 \"<demande en langage naturel>\" [--model MODEL] [--test \"cmd\"] [--validate \"cmd\"] [--rollback-on-validate-fail] [--on-conflict skip|reopen] [--parallel]"
       echo "       echo \"<demande>\" | $0 --stdin [options...]"
       echo "  Décompose la demande en sous-tâches via le LLM (OPENAI_API_BASE) puis lance le coordinateur."
+      echo "  Options pipeline: --test, --validate, --rollback-on-validate-fail, --on-conflict, --parallel."
       exit 0 ;;
     *)         PROMPT_TEXT="$1"; shift ;;
   esac
@@ -36,7 +52,6 @@ fi
 
 [ -n "$PROMPT_TEXT" ] || { echo "Donnez une demande (argument ou stdin avec --stdin)."; exit 1; }
 [ -n "$API_BASE" ] || { echo "Erreur: OPENAI_API_BASE non défini (ex. export OPENAI_API_BASE=http://proxy:4000)"; exit 1; }
-command -v jq >/dev/null 2>&1 || { echo "Erreur: jq requis (parse JSON)."; exit 1; }
 command -v curl >/dev/null 2>&1 || { echo "Erreur: curl requis (appel API)."; exit 1; }
 
 # Appel API chat completions (OpenAI-compatible / LiteLLM)

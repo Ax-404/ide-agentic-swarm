@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Couche mail (type Overstory) — en plus de Seeds : messages entre agents, retours en cours de tâche, handoffs, événements.
+# Prérequis : jq recommandé pour send/list/show (JSON fiable). Sans jq, un fallback manuel est utilisé pour send ;
+#   list/show affichent les lignes brutes. En cas de corps contenant guillemets ou retours à la ligne, installer jq évite les erreurs.
 # Usage:
 #   swarm-mail.sh send --from agent-1 --to coordinator --type help_request --body "Conflit dans src/auth.ts"
 #   swarm-mail.sh send --from agent-1 --to agent-2 --type handoff --body "Validation faite, voir src/validator.ts" [--issue-id seeds-xxx]
@@ -73,9 +75,14 @@ cmd_send() {
       '{id:$id, ts:$ts, from:$from, to:$to, type:$type, body:$body, issue_id:(if $issue_id=="" then null else $issue_id end), priority:($priority|tonumber? // 3)}' 2>/dev/null)
     echo "$line" >> "$MAIL_FILE"
   else
+    # Fallback sans jq : échappement JSON manuel (backslash, guillemets, tab, CR, NL). Pour un usage fiable, installer jq.
     local escaped
-    escaped=$(echo "$body" | sed 's/\\/\\\\/g;s/"/\\"/g;s/\n/\\n/g')
-    echo "{\"id\":\"$id\",\"ts\":\"$ts\",\"from\":\"${from:-unknown}\",\"to\":\"$to\",\"type\":\"$type\",\"body\":\"$escaped\",\"issue_id\":\"$issue_id\",\"priority\":${priority:-3}}" >> "$MAIL_FILE"
+    escaped=$(echo "$body" | sed 's/\\/\\\\/g;s/"/\\"/g;s/\t/\\t/g;s/\r/\\r/g;s/\n/\\n/g')
+    local issue_json="null"
+    [ -n "$issue_id" ] && issue_json="\"$(echo "$issue_id" | sed 's/\\/\\\\/g;s/"/\\"/g')\""
+    local p="${priority:-3}"
+    case "$p" in [0-9]*) ;; *) p=3 ;; esac
+    echo "{\"id\":\"$id\",\"ts\":\"$ts\",\"from\":\"${from:-unknown}\",\"to\":\"$to\",\"type\":\"$type\",\"body\":\"$escaped\",\"issue_id\":$issue_json,\"priority\":$p}" >> "$MAIL_FILE"
   fi
   echo "$id"
 }

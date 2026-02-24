@@ -8,9 +8,19 @@
 set -e
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SWARM_DIR="${REPO_ROOT}/.swarm"
+
+# Afficher l'aide sans exiger aider
+[ "$1" = "-h" ] || [ "$1" = "--help" ] && {
+  echo "Usage: $0 <agent-name> [model]"
+  echo "Exemple: $0 agent-1 gpt-4o"
+  exit 0
+}
+
 AGENT_NAME="${1:?Usage: $0 <agent-name> [model]}"
 MODEL="${2:-gpt-4o}"
 AGENT_DIR="${SWARM_DIR}/${AGENT_NAME}"
+
+"${REPO_ROOT}/scripts/swarm-check.sh" --require aider --quiet || exit 1
 
 if [ ! -d "$AGENT_DIR" ]; then
   echo "Erreur: $AGENT_DIR introuvable. Lance d'abord swarm-dispatch.sh ou swarm-setup.sh."

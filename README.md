@@ -20,6 +20,9 @@ ide-agentic/
 │   └── examples/             # Exemples de tâches
 │       └── example-task-1.md
 ├── scripts/                  # Scripts swarm (Phase 2)
+│   ├── swarm-common.sh       # Fonctions partagées (swarm_task_md_content) — sourcé par dispatch, sling, handoff
+│   ├── swarm-check.sh        # Vérif prérequis (git, jq, sd, aider) — appelé par les autres scripts
+│   ├── swarm-quickstart.sh   # Premier run : check → sd init si besoin → 2 issues test → pipeline
 │   ├── swarm-setup.sh        # Créer N worktrees
 │   ├── swarm-run.sh          # Lancer Aider dans un worktree (+ mulch prime si présent)
 │   ├── swarm-merge.sh        # Merger les branches (--completed = seulement issues fermées)
@@ -41,6 +44,7 @@ ide-agentic/
 │   └── swarm-budget.sh       # Lot 3 : vérif budget (SWARM_BUDGET_MAX, alerte si dépassement)
 │   ├── swarm-workflow.sh     # Moteur de workflow (exécute une définition dans workflows/)
 │   ├── swarm-prompt.sh       # Entrée langage naturel : LLM décompose → coordinateur (OPENAI_API_BASE)
+│   ├── swarm-handoff.sh     # Handoff automatisé : mail handoff → réassigner issue + TASK.md pour l'agent cible
 │   └── swarm-mail.sh         # Couche mail (retours en cours de tâche, handoffs, événements)
 ├── workflows/                # Définitions de workflows (format : étapes + args, séparateur --)
 │   ├── README.md
@@ -48,6 +52,8 @@ ide-agentic/
 │   ├── autonomous.workflow   # Coordinate (création issues + pipeline)
 │   ├── staging.workflow      # Deploy sur branche staging
 │   └── prompt.workflow       # Un prompt → décomposition LLM → coordinateur
+├── tests/
+│   └── smoke.sh              # Tests smoke (check, common, mail, --help)
 ├── .vscode/
 │   └── tasks.json            # Phase 5 : tâches IDE (Dispatch, Dashboard, Logs, etc.)
 └── templates/                # Modèles réutilisables
@@ -55,6 +61,10 @@ ide-agentic/
 ```
 
 ## Démarrage rapide
+
+**Premier run (tout-en-un)** : `./scripts/swarm-quickstart.sh` — vérifie les prérequis, initialise Seeds si besoin, propose de créer 2 issues de test et lance le pipeline. Avec `--yes` : sans confirmation.
+
+**Workspace / layout** : en **interactif** : 1 terminal à la racine (dispatch, merge, dashboard) + 1 terminal par agent (`swarm-run.sh agent-1`, `agent-2`, …). En **headless** : un seul terminal suffit — `swarm-pipeline.sh N` lance dispatch puis les agents en arrière-plan et fait le merge à la fin.
 
 1. **Config** : [docs/config-litelmm-tailscale-aider.md](docs/config-litelmm-tailscale-aider.md) — proxy LiteLLM sur Mac Mini, Tailscale, Aider sur MacBook.
 2. **Roadmap** : [docs/projet-roadmap.md](docs/projet-roadmap.md) — objectifs et phases (1 à 6).
@@ -101,7 +111,8 @@ SWARM_BUDGET_MAX=10 ./scripts/swarm-budget.sh            # Vérif budget (SWARM_
 ./scripts/swarm-workflow.sh                               # default.workflow ou autonomous.workflow
 ./scripts/swarm-workflow.sh workflows/staging.workflow    # Workflow explicite
 ```
-Voir [docs/workflows/phase6-workflow.md](docs/workflows/phase6-workflow.md) et [workflows/README.md](workflows/README.md).
+Voir [docs/workflows/phase6-workflow.md](docs/workflows/phase6-workflow.md) et [workflows/README.md](workflows/README.md).  
+Tests smoke (après modif des scripts) : `./tests/smoke.sh`
 
 ## Utiliser ce projet sur un autre dépôt
 
@@ -111,6 +122,12 @@ Pour que le swarm **agisse directement sur un autre projet** (construction, code
 - Ou **créer le nouveau projet** à partir de ce dépôt (template) pour qu’il contienne déjà le swarm.
 
 Détail : [docs/utilisation-autres-projets.md](docs/utilisation-autres-projets.md).
+
+---
+
+## Dépannage
+
+Voir [docs/troubleshooting.md](docs/troubleshooting.md) : Aider ne répond pas (proxy, OPENAI_API_BASE), sd introuvable, aucune issue ouverte, conflit au merge, mail vide, commandes de diagnostic.
 
 ---
 

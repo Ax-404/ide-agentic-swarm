@@ -36,12 +36,19 @@ while [ $# -gt 0 ]; do
     --rollback-on-validate-fail) ROLLBACK_ON_VALIDATE_FAIL=1; shift ;;
     --parallel)                  PARALLEL=1; shift ;;
     --on-conflict)               ON_CONFLICT="${2:?--on-conflict exige: skip|reopen}"; shift 2 ;;
+    -h|--help)
+      echo "Usage: $0 [N] [--test \"cmd\"] [--validate \"cmd\"] [--rollback-on-validate-fail] [--parallel] [--on-conflict skip|reopen]"
+      exit 0 ;;
     [0-9]*)                      N="$1"; shift ;;
     *)                            echo "Usage: $0 [N] [--test \"cmd\"] [--validate \"cmd\"] [--rollback-on-validate-fail] [--parallel] [--on-conflict skip|reopen]"; exit 1 ;;
   esac
 done
 
 cd "$REPO_ROOT"
+
+# CWD : ce script reste en REPO_ROOT ; dispatch/merge s'exécutent ici ; headless est lancé en sous-processus dans son worktree.
+# Prérequis : Seeds + aider (pipeline lance dispatch et headless)
+"${REPO_ROOT}/scripts/swarm-check.sh" --require seeds --require aider --quiet || exit 1
 
 # 1 — Dispatch : créer worktrees et assigner N issues
 echo "=== Dispatch ($N agents) ==="

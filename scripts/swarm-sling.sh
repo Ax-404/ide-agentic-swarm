@@ -7,16 +7,20 @@
 set -e
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SWARM_DIR="${REPO_ROOT}/.swarm"
+
+# Afficher l'aide sans exiger les prérequis
+[ "$1" = "-h" ] || [ "$1" = "--help" ] && {
+  echo "Usage: $0 <issue-id> [model]"
+  echo "Exemple: $0 seeds-a1b2 gpt-4o"
+  exit 0
+}
+
 ISSUE_ID="${1:?Usage: $0 <issue-id> [model]}"
 MODEL="${2:-gpt-4o}"
 
-if ! command -v sd >/dev/null 2>&1; then
-  echo "Erreur: 'sd' (Seeds) introuvable. Voir https://github.com/jayminwest/seeds"
-  exit 1
-fi
-
+"${REPO_ROOT}/scripts/swarm-check.sh" --require seeds --quiet || exit 1
 cd "$REPO_ROOT"
-[ -d ".seeds" ] || { echo "Erreur: .seeds/ introuvable. Lance 'sd init' à la racine."; exit 1; }
+source "${REPO_ROOT}/scripts/swarm-common.sh"
 
 # Nom worktree = agent-<court id> pour éviter conflits
 short_id=$(echo "$ISSUE_ID" | tr -dc 'a-zA-Z0-9' | head -c 12)
@@ -43,17 +47,7 @@ if command -v jq >/dev/null 2>&1 && [ -f ".seeds/issues.jsonl" ]; then
 fi
 [ -z "$title" ] && title="$ISSUE_ID"
 
-cat > "${dir}/TASK.md" << EOF
-# Tâche: $title
-
-Issue: **$ISSUE_ID** (Seeds). En fin de session: \`sd close $ISSUE_ID --reason "Résumé"\`
-
-$desc
-
-## En cas de blocage ou pour passer la main
-
-Si tu bloques ou si un autre agent doit prendre la suite : \`../../scripts/swarm-mail.sh send --to coordinator --type help_request --body "..."\` ou \`--to agent-X --type handoff --body "..."\`. Voir : \`./scripts/swarm-mail.sh show\` (depuis la racine).
-EOF
+swarm_task_md_content "$ISSUE_ID" "$title" "$desc" > "${dir}/TASK.md"
 echo "$ISSUE_ID" > "${dir}/.issue_id"
 sd update "$ISSUE_ID" --status in_progress
 [ -x "${REPO_ROOT}/scripts/swarm-log.sh" ] && "${REPO_ROOT}/scripts/swarm-log.sh" sling "$ISSUE_ID" "$name" "$MODEL"

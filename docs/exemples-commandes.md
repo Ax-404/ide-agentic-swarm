@@ -4,6 +4,23 @@ Commandes à lancer **depuis la racine du projet** (après `cd mon-projet` ou ap
 
 ---
 
+## Quel script pour quoi ?
+
+| Entrée | Prérequis | Script à lancer |
+|--------|-----------|-----------------|
+| **Premier run** (tout valider en une fois) | git, sd, aider | `./scripts/swarm-quickstart.sh` ou `./scripts/swarm-quickstart.sh --yes` |
+| **Manuelle** (sans Seeds) : worktrees + TASK à la main | git, aider | `swarm-setup.sh N` → éditer TASK.md → `swarm-run.sh agent-X` → `swarm-merge.sh` |
+| **Manuelle avec Seeds** : issues déjà créées | git, sd, .seeds/, aider | `swarm-dispatch.sh N` → `swarm-run.sh agent-X` ou `swarm-pipeline.sh N` |
+| **Liste de tâches** (titres → issues + pipeline) | git, sd, aider, (jq pour merge/dashboard) | `swarm-coordinate.sh "T1" "T2"` ou `--file tasks.txt` + options |
+| **Prompt naturel** (phrase → LLM → sous-tâches → pipeline) | git, sd, aider, **OPENAI_API_BASE**, jq, curl | `swarm-prompt.sh "Ta demande"` + options |
+| **Une issue précise** | git, sd, .seeds/, aider | `swarm-sling.sh <issue-id> [model]` |
+| **Diagnostic prérequis** | — | `./scripts/swarm-check.sh` ou `--require seeds|jq|aider` |
+| **Handoff agent → agent** (appliquer les handoffs mail) | git, sd, jq, .seeds/, mail | `swarm-handoff.sh` ou `swarm-handoff.sh list` |
+
+**Prérequis détaillés :** Seeds = `sd` + répertoire `.seeds/` (sinon `sd init`). Mulch = optionnel (expertise). jq = recommandé pour mail, prompt, lecture JSONL. Proxy = `OPENAI_API_BASE` pour Aider et pour `swarm-prompt.sh`.
+
+---
+
 ## Premier usage (sans Seeds)
 
 ```bash
@@ -171,7 +188,7 @@ En plus de Seeds, la couche **mail** permet aux agents d’envoyer des messages 
 # Lister les messages
 ./scripts/swarm-mail.sh list --to coordinator [--type blocked] [--limit 20]
 
-# Affichage lisible (derniers 5 par défaut)
+# Affichage lisible : derniers N messages (défaut 5). Pour un suivi léger, « derniers N » suffit.
 ./scripts/swarm-mail.sh show 10
 ```
 
@@ -181,10 +198,30 @@ Voir [phase6-workflow.md §15](workflows/phase6-workflow.md).
 
 ---
 
+## Handoff automatisé (agent A → agent B)
+
+Après qu’un agent a envoyé un message handoff (ex. `--to agent-2 --type handoff --body "..."`), appliquer les handoffs pour réassigner l’issue au worktree de l’agent cible et mettre à jour TASK.md :
+
+```bash
+# Voir les derniers handoffs sans appliquer
+./scripts/swarm-handoff.sh list --limit 5
+
+# Appliquer les handoffs (crée/réassigne worktree + TASK.md + issue in_progress)
+./scripts/swarm-handoff.sh [--limit 10] [--dry-run]
+
+# Puis lancer l’agent cible
+./scripts/swarm-run.sh agent-2 gpt-4o
+```
+
+---
+
 ## Récap des scripts principaux
 
 | Script | Rôle |
 |--------|------|
+| `swarm-common.sh` | **Sourcé** par dispatch, sling, handoff : fonction `swarm_task_md_content` (génération TASK.md). |
+| `swarm-check.sh [--require seeds\|jq\|aider]` | Vérifie les prérequis (git, sd, jq, aider). |
+| `swarm-quickstart.sh [--yes]` | Premier run : check → sd init si besoin → 2 issues test → pipeline. |
 | `swarm-setup.sh [N]` | Crée N worktrees (sans Seeds). |
 | `swarm-seeds-create.sh "T1" "T2"` | Crée les issues Seeds. |
 | `swarm-dispatch.sh [N]` | Assigne N issues open → worktrees + TASK.md. |
@@ -197,5 +234,6 @@ Voir [phase6-workflow.md §15](workflows/phase6-workflow.md).
 | `swarm-clean.sh [--merged-only] [--force]` | Supprime les worktrees. |
 | `swarm-workflow.sh [nom]` | Exécute un fichier workflows/*.workflow. |
 | `swarm-mail.sh send|list|show` | Couche mail : retours en cours de tâche, handoffs, événements (en plus de Seeds). |
+| `swarm-handoff.sh [--limit N]` | Lit les handoffs mail → réassigne l'issue à l'agent cible (TASK.md + in_progress). |
 
 Voir aussi : [phase6-workflow.md](workflows/phase6-workflow.md), [utilisation-autres-projets.md](utilisation-autres-projets.md).

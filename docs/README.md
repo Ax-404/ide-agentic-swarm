@@ -8,13 +8,15 @@ Index de la documentation du projet **ide-agentic**.
 |----------|-------------|
 | [utilisation-autres-projets.md](utilisation-autres-projets.md) | Copier le swarm dans un autre projet ou l’utiliser comme template pour qu’il agisse sur la construction du projet. |
 
-| [exemples-commandes.md](exemples-commandes.md) | **Helper** : exemples de commandes (setup, Seeds, coordinateur, prompt, pipeline, workflows, monitoring). |
+| [exemples-commandes.md](exemples-commandes.md) | **Helper** : tableau « Quel script pour quoi », exemples (setup, Seeds, coordinateur, prompt, pipeline, workflows, monitoring). |
+| [troubleshooting.md](troubleshooting.md) | **Dépannage** : Aider ne répond pas, sd introuvable, aucune issue ouverte, conflit au merge, mail vide, commandes de diagnostic. |
 
 ## Configuration et déploiement
 
 | Document | Description |
 |----------|-------------|
 | [config-litelmm-tailscale-aider.md](config-litelmm-tailscale-aider.md) | Proxy LiteLLM sur Mac Mini M2, Tailscale, configuration Aider sur MacBook M1. |
+| [costs-litelmm.md](costs-litelmm.md) | **Coûts** : récupérer les coûts depuis LiteLLM et alimenter SWARM_CURRENT_SPEND / .swarm/costs/current_spend pour swarm-budget.sh. |
 
 ## Projet et roadmap
 

@@ -385,6 +385,7 @@ En plus des issues Seeds (open / in_progress / closed), une **couche mail** type
 ### Stockage
 
 - Fichier **`.swarm/mail/messages.jsonl`** (une ligne JSON par message, append-only). Local au run (`.swarm/` est dans `.gitignore`).
+- **Prérequis** : **jq** est recommandé pour `send` / `list` / `show` (JSON fiable). Sans jq, un fallback manuel est utilisé pour l’envoi ; en cas de corps avec guillemets ou retours à la ligne, installer jq évite les erreurs.
 
 ### Commandes
 

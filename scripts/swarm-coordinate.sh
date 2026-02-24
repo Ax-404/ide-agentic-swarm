@@ -10,6 +10,18 @@ set -e
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
+# Afficher l'aide sans exiger les prérequis
+for a in "$@"; do
+  [ "$a" = "-h" ] || [ "$a" = "--help" ] && {
+    echo "Usage: $0 [--file FICHIER] \"Titre 1\" \"Titre 2\" ... [--test \"cmd\"] [--validate \"cmd\"] [--rollback-on-validate-fail] [--on-conflict skip|reopen] [--parallel]"
+    echo "  Crée les issues Seeds puis lance le pipeline (dispatch → headless → merge)."
+    echo "  --file : une tâche par ligne (titre ou titre|description)."
+    exit 0
+  }
+done
+
+"${REPO_ROOT}/scripts/swarm-check.sh" --require seeds --quiet || exit 1
+
 TITLES=()
 FILE=""
 PIPELINE_OPTS=()
@@ -43,11 +55,6 @@ if [ -n "$FILE" ]; then
 fi
 
 [ ${#TITLES[@]} -gt 0 ] || { echo "Usage: $0 \"Titre 1\" \"Titre 2\" ... ou $0 --file tasks.txt"; exit 1; }
-
-if ! command -v sd >/dev/null 2>&1; then
-  echo "Erreur: 'sd' (Seeds) introuvable. Voir https://github.com/jayminwest/seeds"
-  exit 1
-fi
 
 echo "=== Coordinateur : création de ${#TITLES[@]} issue(s) puis pipeline ==="
 echo ""

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Phase 3 — Dispatch: récupère les issues prêtes (Seeds), crée un worktree par issue,
 # écrit TASK.md + .issue_id, marque l'issue in_progress.
+# Les issues sont triées par priorité (champ priority dans .seeds/issues.jsonl, plus petite = plus prioritaire).
 # Usage: ./scripts/swarm-dispatch.sh [N]   (N = nombre d'agents à lancer, défaut: 2)
 # Prérequis: Seeds (sd), dépôt git, .seeds/ initialisé.
 
@@ -9,26 +10,21 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SWARM_DIR="${REPO_ROOT}/.swarm"
 N="${1:-2}"
 
-if ! command -v sd >/dev/null 2>&1; then
-  echo "Erreur: 'sd' (Seeds) introuvable. Voir https://github.com/jayminwest/seeds"
-  exit 1
-fi
+# Afficher l'aide sans exiger les prérequis
+[ "$1" = "-h" ] || [ "$1" = "--help" ] && {
+  echo "Usage: $0 [N]   (N = nombre d'agents à lancer, défaut: 2)"
+  exit 0
+}
 
+"${REPO_ROOT}/scripts/swarm-check.sh" --require seeds --quiet || exit 1
 cd "$REPO_ROOT"
-[ -d ".seeds" ] || { echo "Erreur: .seeds/ introuvable. Lance 'sd init' à la racine."; exit 1; }
+source "${REPO_ROOT}/scripts/swarm-common.sh"
 
-if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  echo "Erreur: pas un dépôt git."
-  exit 1
-fi
-
-# Récupérer les issues ouvertes (ready = sans blocage). On utilise sd list pour avoir id + title.
-# sd list --status open --json peut varier; on lit .seeds/issues.jsonl pour robustesse.
+# Récupérer les issues ouvertes, triées par priorité (priorité numérique croissante = plus prioritaire en premier).
+# Si .seeds/issues.jsonl a un champ priority, on trie ; sinon ordre inchangé.
 get_open_issues() {
   if [ -f ".seeds/issues.jsonl" ] && command -v jq >/dev/null 2>&1; then
-    while IFS= read -r line; do
-      echo "$line" | jq -r 'select(.status=="open")? | "\(.id)|\(.title)"' 2>/dev/null
-    done < .seeds/issues.jsonl
+    jq -r 'select(.status=="open") | "\(.priority // 99)|\(.id)|\(.title)"' .seeds/issues.jsonl 2>/dev/null | sort -t'|' -k1 -n | cut -d'|' -f2-
   else
     sd list --status open --limit 50 2>/dev/null | while read -r line; do
       id=$(echo "$line" | grep -oE 'seeds-[a-zA-Z0-9]+' | head -1)
@@ -62,17 +58,7 @@ while IFS='|' read -r issue_id title; do
   fi
   [ -z "$title" ] && title="$issue_id"
 
-  cat > "${dir}/TASK.md" << EOF
-# Tâche: $title
-
-Issue: **$issue_id** (Seeds). En fin de session: \`sd close $issue_id --reason "Résumé"\`
-
-$desc
-
-## En cas de blocage ou pour passer la main
-
-Si tu bloques ou si un autre agent doit prendre la suite, envoie un message : \`../../scripts/swarm-mail.sh send --to coordinator --type help_request --body "..."\` ou \`--to agent-X --type handoff --body "..."\`. Voir les messages : \`./scripts/swarm-mail.sh show\` (depuis la racine).
-EOF
+  swarm_task_md_content "$issue_id" "$title" "$desc" > "${dir}/TASK.md"
   echo "$issue_id" > "${dir}/.issue_id"
   sd update "$issue_id" --status in_progress
   echo "  Assigné: $issue_id → $name (in_progress)"

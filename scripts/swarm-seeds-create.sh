@@ -8,10 +8,15 @@ set -e
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
-if ! command -v sd >/dev/null 2>&1; then
-  echo "Erreur: 'sd' (Seeds) introuvable. Install: git clone https://github.com/jayminwest/seeds && cd seeds && bun install && bun link"
-  exit 1
-fi
+# Afficher l'aide sans exiger sd
+for a in "$@"; do
+  [ "$a" = "-h" ] || [ "$a" = "--help" ] && {
+    echo "Usage: $0 \"Titre tâche 1\" \"Titre tâche 2\" [...], ex. $0 \"Auth login\" \"Logs middleware\""
+    exit 0
+  }
+done
+
+"${REPO_ROOT}/scripts/swarm-check.sh" --require sd --quiet || exit 1
 
 if [ ! -d ".seeds" ]; then
   echo "Initialisation de Seeds dans le projet..."
