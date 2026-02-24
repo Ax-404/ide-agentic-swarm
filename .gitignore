@@ -1,0 +1,13 @@
+# Phase 2 — worktrees des agents (gérés par git worktree)
+.swarm/
+
+# Env / secrets
+.env
+.env.local
+*.pem
+
+# OS / éditeurs
+.DS_Store
+.idea/
+*.swp
+*.swo

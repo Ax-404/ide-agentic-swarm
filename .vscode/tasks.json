@@ -1,0 +1,141 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Swarm: Dispatch (2 agents)",
+      "type": "shell",
+      "command": "./scripts/swarm-dispatch.sh",
+      "args": ["2"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Swarm: Dashboard",
+      "type": "shell",
+      "command": "./scripts/swarm-dashboard.sh",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Swarm: Dashboard (watch)",
+      "type": "shell",
+      "command": "./scripts/swarm-dashboard.sh",
+      "args": ["--watch", "--interval", "5"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "Swarm: Logs",
+      "type": "shell",
+      "command": "./scripts/swarm-logs.sh",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always" }
+    },
+    {
+      "label": "Swarm: Logs (tail)",
+      "type": "shell",
+      "command": "./scripts/swarm-logs.sh",
+      "args": ["--tail"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "Swarm: Mail (show)",
+      "type": "shell",
+      "command": "./scripts/swarm-mail.sh",
+      "args": ["show", "15"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always" }
+    },
+    {
+      "label": "Swarm: Watchdog (once)",
+      "type": "shell",
+      "command": "./scripts/swarm-watch.sh",
+      "args": ["--once"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always" }
+    },
+    {
+      "label": "Swarm: Merge (--completed)",
+      "type": "shell",
+      "command": "./scripts/swarm-merge.sh",
+      "args": ["--completed"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always" }
+    },
+    {
+      "label": "Swarm: Costs / sessions",
+      "type": "shell",
+      "command": "./scripts/swarm-costs.sh",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always" }
+    },
+    {
+      "label": "Swarm: Prompt (langage naturel → coordinateur)",
+      "type": "shell",
+      "command": "./scripts/swarm-prompt.sh",
+      "args": ["Ajoute l'authentification et un middleware de logs"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Swarm: Coordinate (créer issues + pipeline)",
+      "type": "shell",
+      "command": "./scripts/swarm-coordinate.sh",
+      "args": ["Tâche 1", "Tâche 2"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Swarm: Pipeline (2, headless → merge)",
+      "type": "shell",
+      "command": "./scripts/swarm-pipeline.sh",
+      "args": ["2"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Swarm: Rollback",
+      "type": "shell",
+      "command": "./scripts/swarm-rollback.sh",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always" }
+    },
+    {
+      "label": "Swarm: Validate (post-merge)",
+      "type": "shell",
+      "command": "./scripts/swarm-validate.sh",
+      "args": ["make test", "--rollback-on-fail"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always" }
+    },
+    {
+      "label": "Swarm: Deploy staging (pipeline sur staging)",
+      "type": "shell",
+      "command": "./scripts/swarm-deploy-staging.sh",
+      "args": ["2"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Swarm: Budget check",
+      "type": "shell",
+      "command": "./scripts/swarm-budget.sh",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always" }
+    },
+    {
+      "label": "Swarm: Workflow (default)",
+      "type": "shell",
+      "command": "./scripts/swarm-workflow.sh",
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    }
+  ]
+}
