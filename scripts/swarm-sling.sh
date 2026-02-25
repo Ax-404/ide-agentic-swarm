@@ -3,8 +3,8 @@
 # Rôle(s): Builder (défaut) ou Scout si titre issue commence par [Scout] ou si 3e arg = scout. Voir docs/ROLES.md.
 # Usage: ./scripts/swarm-sling.sh <issue-id> [model] [role]
 #   role = scout | builder | reviewer | documenter | red-team (optionnel).
-# Exemple: ./scripts/swarm-sling.sh seeds-a1b2 gpt-4o
-#          ./scripts/swarm-sling.sh seeds-xxx gpt-4o scout
+# Exemple: ./scripts/swarm-sling.sh seeds-a1b2 sonnet-4.6
+#          ./scripts/swarm-sling.sh seeds-xxx sonnet-4.6 scout
 # Prérequis: Seeds (sd), dépôt git, .seeds/ initialisé.
 
 set -e
@@ -14,13 +14,13 @@ SWARM_DIR="${REPO_ROOT}/.swarm"
 # Afficher l'aide sans exiger les prérequis
 [ "$1" = "-h" ] || [ "$1" = "--help" ] && {
   echo "Usage: $0 <issue-id> [model] [role]"
-  echo "Exemple: $0 seeds-a1b2 gpt-4o"
-  echo "         $0 seeds-xxx gpt-4o scout"
+  echo "Exemple: $0 seeds-a1b2 sonnet-4.6"
+  echo "         $0 seeds-xxx sonnet-4.6 scout"
   exit 0
 }
 
 ISSUE_ID="${1:?Usage: $0 <issue-id> [model] [role]}"
-MODEL="${2:-gpt-4o}"
+MODEL="${2:-sonnet-4.6}"
 ROLE_ARG="${3:-}"
 
 "${REPO_ROOT}/scripts/swarm-check.sh" --require seeds --quiet || exit 1

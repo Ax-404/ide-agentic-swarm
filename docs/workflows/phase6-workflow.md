@@ -25,7 +25,7 @@ Un agent peut exécuter **une seule tâche** décrite dans `TASK.md` puis s’ar
 Exemple :
 
 ```bash
-./scripts/swarm-run-headless.sh agent-1 gpt-4o
+./scripts/swarm-run-headless.sh agent-1 sonnet-4.6
 ```
 
 ### Comportement
@@ -54,7 +54,7 @@ Un seul script enchaîne : **dispatch** de N issues → **agents headless** (uni
 - **--validate "cmd"** : après le merge, exécuter `cmd` sur la branche cible ; si échec et `--rollback-on-validate-fail`, rollback + alerte (voir §6b).
 - **--rollback-on-validate-fail** : avec `--validate`, en cas d'échec de la validation, `swarm-rollback.sh` puis alerte `validate_failed`.
 - **--parallel** : lancer les agents headless en parallèle (défaut : séquentiel).
-- **SWARM_MODEL** : modèle utilisé par les agents (défaut : `gpt-4o`).
+- **SWARM_MODEL** : modèle utilisé par les agents (défaut : `sonnet-4.6`).
 - **--on-conflict skip|reopen** : en cas de conflit au merge (voir §5).
 
 ### Exemples
@@ -221,7 +221,7 @@ git reset --hard HEAD~1
 |--------|----------|
 | **Coordinateur** : créer issues + lancer pipeline | `./scripts/swarm-coordinate.sh "Titre 1" "Titre 2"` ou `--file tasks.txt` |
 | **Un prompt (langage naturel)** : décomposition LLM → coordinateur | `./scripts/swarm-prompt.sh "Ajoute l'auth et les logs"` (LITELLM_API_BASE ou OPENROUTER_API_KEY requis) |
-| Lancer un agent headless (une tâche puis stop) | `./scripts/swarm-run-headless.sh agent-1 gpt-4o` |
+| Lancer un agent headless (une tâche puis stop) | `./scripts/swarm-run-headless.sh agent-1 sonnet-4.6` |
 | Pipeline complet (dispatch + headless + merge) | `./scripts/swarm-pipeline.sh 2` |
 | Pipeline avec gate tests | `./scripts/swarm-pipeline.sh 2 --test "make test"` |
 | Pipeline + conflits ignorés (re-dispatch possible) | `./scripts/swarm-pipeline.sh 2 --on-conflict skip` ou `--on-conflict reopen` |
@@ -329,7 +329,7 @@ Un **seul prompt** en langage naturel peut déclencher tout le flux : le script 
 
 ```bash
 export LITELLM_API_BASE="http://macmini.ton-tailnet.ts.net:4000"   # ou OPENROUTER_API_KEY pour OpenRouter
-./scripts/swarm-prompt.sh "Ajoute l'authentification et un middleware de logs" [--model gpt-4o] [--test "make test"] [--on-conflict skip]
+./scripts/swarm-prompt.sh "Ajoute l'authentification et un middleware de logs" [--model sonnet-4.6] [--test "make test"] [--on-conflict skip]
 ```
 
 Ou depuis l’entrée standard :
@@ -342,7 +342,7 @@ echo "Refactoriser le module API et ajouter des tests" | ./scripts/swarm-prompt.
 
 - **LITELLM_API_BASE** (LiteLLM) ou **OPENROUTER_API_KEY** (OpenRouter) : voir [exemples-commandes.md](../exemples-commandes.md) section Prompt.
 - **curl**, **jq** : pour l’appel API et le parse de la réponse.
-- **Modèle** : `--model` ou variable `SWARM_PROMPT_MODEL` (défaut : `gpt-4o`).
+- **Modèle** : `--model` ou variable `SWARM_PROMPT_MODEL` (défaut : `sonnet-4.6`).
 
 ### Comportement
 

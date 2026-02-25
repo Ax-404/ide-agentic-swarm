@@ -59,7 +59,7 @@ echo "=== Dispatch ($N agents) ==="
 # 2 — Lancer les agents headless (worktrees avec .issue_id et TASK.md dont l'issue est encore in_progress)
 echo ""
 echo "=== Agents headless ==="
-MODEL="${SWARM_MODEL:-gpt-4o}"
+MODEL="${SWARM_MODEL:-sonnet-4.6}"
 
 # Garde-fou : ne lancer headless que si l'issue Seeds est encore in_progress (évite double exécution si on n'a pas nettoyé)
 issue_still_in_progress() {

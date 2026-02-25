@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Entrée en langage naturel : décompose une demande via un LLM en sous-tâches puis lance le coordinateur.
 # Rôle(s): Planner (décomposition requête → liste de tâches). Voir docs/ROLES.md.
-# Usage: ./scripts/swarm-prompt.sh "Ajoute l'authentification et un middleware de logs" [--model gpt-4o] [--test "make test"] ...
+# Usage: ./scripts/swarm-prompt.sh "Ajoute l'authentification et un middleware de logs" [--model sonnet-4.6] [--test "make test"] ...
 #        echo "Refactoriser le module API" | ./scripts/swarm-prompt.sh --stdin [options...]
 # Prérequis: LITELLM_API_BASE (URL du proxy LiteLLM) ou OPENROUTER_API_KEY (OpenRouter) ; curl, jq.
 # Les options --test, --validate, --rollback-on-validate-fail, --on-conflict, --parallel sont transmises au coordinateur.
@@ -16,7 +16,7 @@ elif [ -n "${OPENROUTER_API_KEY:-}" ]; then
   API_BASE="https://openrouter.ai/api"
   API_KEY="${OPENROUTER_API_KEY}"
 fi
-MODEL="${SWARM_PROMPT_MODEL:-gpt-4o}"
+MODEL="${SWARM_PROMPT_MODEL:-sonnet-4.6}"
 PROMPT_TEXT=""
 PIPELINE_OPTS=()
 USE_STDIN=""

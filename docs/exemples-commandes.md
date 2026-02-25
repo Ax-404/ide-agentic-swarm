@@ -28,9 +28,9 @@ Commandes à lancer **depuis la racine du projet** (après `cd mon-projet` ou ap
 ./scripts/swarm-setup.sh 2
 
 # Éditer les tâches dans .swarm/agent-1/TASK.md et .swarm/agent-2/TASK.md puis lancer Aider en interactif
-./scripts/swarm-run.sh agent-1 gpt-4o
+./scripts/swarm-run.sh agent-1 sonnet-4.6
 # Dans un 2e terminal :
-./scripts/swarm-run.sh agent-2 gpt-4o
+./scripts/swarm-run.sh agent-2 sonnet-4.6
 
 # Merger les branches dans la branche courante
 ./scripts/swarm-merge.sh
@@ -54,7 +54,7 @@ sd init
 ./scripts/swarm-dispatch.sh 2
 
 # Lancer les agents (interactif ou headless)
-./scripts/swarm-run.sh agent-1 gpt-4o
+./scripts/swarm-run.sh agent-1 sonnet-4.6
 # ou pipeline automatique (dispatch déjà fait) :
 ./scripts/swarm-pipeline.sh 2
 
@@ -159,7 +159,7 @@ SWARM_BUDGET_MAX=10.00 ./scripts/swarm-budget.sh
 
 ```bash
 # Assigner une issue Seeds à un worktree dédié et lancer Aider
-./scripts/swarm-sling.sh seeds-abc123 gpt-4o
+./scripts/swarm-sling.sh seeds-abc123 sonnet-4.6
 ```
 
 ---
@@ -216,7 +216,7 @@ Après qu’un agent a envoyé un message handoff (ex. `--to agent-2 --type hand
 ./scripts/swarm-handoff.sh [--limit 10] [--dry-run]
 
 # Puis lancer l’agent cible
-./scripts/swarm-run.sh agent-2 gpt-4o
+./scripts/swarm-run.sh agent-2 sonnet-4.6
 ```
 
 ---

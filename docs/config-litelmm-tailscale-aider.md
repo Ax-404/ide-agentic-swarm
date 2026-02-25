@@ -144,12 +144,12 @@ source ~/.zshrc
 
 ### Lancer Aider
 
-Configurer Aider pour utiliser l’URL du proxy (voir documentation Aider). Le modèle sera celui configuré sur le proxy (ex. `gpt-4o`, `claude-sonnet`, ou les alias définis dans `config.yaml`) :
+Configurer Aider pour utiliser l’URL du proxy (voir documentation Aider). Le modèle sera celui configuré sur le proxy (ex. `sonnet-4.6`, `gpt-4o`, `claude-sonnet`, ou les alias définis dans `config.yaml`) :
 
 ```bash
-aider --model gpt-4o
+aider --model sonnet-4.6
 # ou
-aider --model claude-sonnet
+aider --model gpt-4o
 ```
 
 Les appels partent du MacBook → Tailscale → Mac Mini (proxy) → API du provider (OpenAI, Anthropic, etc.).

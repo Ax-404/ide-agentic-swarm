@@ -81,7 +81,7 @@ ide-agentic/
 ```bash
 ./scripts/swarm-setup.sh 2           # Créer 2 agents (worktrees)
 # Éditer .swarm/agent-1/TASK.md et .swarm/agent-2/TASK.md
-./scripts/swarm-run.sh agent-1 gpt-4o     # Terminal 1
+./scripts/swarm-run.sh agent-1 sonnet-4.6     # Terminal 1
 ./scripts/swarm-run.sh agent-2 claude-sonnet  # Terminal 2
 # Après travail : commit dans chaque worktree, puis :
 git checkout main && ./scripts/swarm-merge.sh
@@ -91,7 +91,7 @@ git checkout main && ./scripts/swarm-merge.sh
 ```bash
 ./scripts/swarm-seeds-create.sh "Titre 1" "Titre 2"   # ou sd create
 ./scripts/swarm-dispatch.sh 2                         # issues ouvertes → worktrees
-./scripts/swarm-run.sh agent-1 gpt-4o                 # par terminal (ou swarm-sling.sh <issue-id>)
+./scripts/swarm-run.sh agent-1 sonnet-4.6                 # par terminal (ou swarm-sling.sh <issue-id>)
 # Dans chaque worktree : sd close <id> --reason "..." puis commit
 git checkout main && ./scripts/swarm-merge.sh --completed
 ./scripts/swarm-clean.sh --force
@@ -101,7 +101,7 @@ git checkout main && ./scripts/swarm-merge.sh --completed
 ```bash
 ./scripts/swarm-prompt.sh "Ajoute l'auth et les logs" [--test "make test"]   # Un prompt → LLM → coordinateur (LITELLM_API_BASE ou OPENROUTER_API_KEY)
 ./scripts/swarm-coordinate.sh "Titre 1" "Titre 2" [--test "make test"]   # Créer issues + lancer pipeline (lot 2)
-./scripts/swarm-run-headless.sh agent-1 gpt-4o   # Une tâche (TASK.md) puis stop, sd close auto
+./scripts/swarm-run-headless.sh agent-1 sonnet-4.6   # Une tâche (TASK.md) puis stop, sd close auto
 ./scripts/swarm-pipeline.sh 2                    # Dispatch 2 → headless → merge --completed
 ./scripts/swarm-pipeline.sh 2 --test "make test" # Idem, ne merger que si tests verts
 ./scripts/swarm-merge.sh --completed --test "pytest"

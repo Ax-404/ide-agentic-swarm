@@ -39,8 +39,8 @@ while true; do
       log_event watch_dead "$name" "pid=$pid"
       rm -f "$pid_file"
       if [ -n "$RELAUNCH" ]; then
-        echo "  Relance: nohup $REPO_ROOT/scripts/swarm-run.sh $name gpt-4o &"
-        nohup "${REPO_ROOT}/scripts/swarm-run.sh" "$name" gpt-4o >> "${dir}/.relaunch.log" 2>&1 &
+        echo "  Relance: nohup $REPO_ROOT/scripts/swarm-run.sh $name sonnet-4.6 &"
+        nohup "${REPO_ROOT}/scripts/swarm-run.sh" "$name" sonnet-4.6 >> "${dir}/.relaunch.log" 2>&1 &
         log_event watch_relaunch "$name"
       fi
     fi

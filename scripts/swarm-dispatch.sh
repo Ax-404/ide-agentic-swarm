@@ -95,6 +95,6 @@ agents_list=$(seq -s ' ' -f 'agent-%g' 1 "$count" 2>/dev/null || true)
 echo ""
 echo "Dispatch terminé. Lance un terminal par agent:"
 for i in $(seq 1 "$count"); do
-  echo "  ./scripts/swarm-run.sh agent-$i \${MODEL:-gpt-4o}"
+  echo "  ./scripts/swarm-run.sh agent-$i \${MODEL:-sonnet-4.6}"
 done
 echo "Quand chaque agent a fini: sd close <id> --reason \"...\" puis ./scripts/swarm-merge.sh"

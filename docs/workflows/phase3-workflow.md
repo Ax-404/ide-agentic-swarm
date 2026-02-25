@@ -45,7 +45,7 @@ Cela :
 Tu lances ensuite un terminal par agent :
 
 ```bash
-./scripts/swarm-run.sh agent-1 gpt-4o
+./scripts/swarm-run.sh agent-1 sonnet-4.6
 ./scripts/swarm-run.sh agent-2 claude-sonnet
 ```
 
@@ -56,7 +56,7 @@ Tu lances ensuite un terminal par agent :
 Pour lancer un seul agent sur une issue donnée (création worktree + claim + Aider) :
 
 ```bash
-./scripts/swarm-sling.sh seeds-a1b2 gpt-4o
+./scripts/swarm-sling.sh seeds-a1b2 sonnet-4.6
 ```
 
 Le script crée un worktree dédié (ex. `agent-seedsa1b2`), remplit `TASK.md` et `.issue_id`, met l’issue en `in_progress`, puis lance `swarm-run.sh` (donc Aider avec `mulch prime` si présent).
@@ -113,7 +113,7 @@ Après merge, supprimer les worktrees :
 Lors du lancement d’un agent, tu peux préciser un rôle (rappel dans le contexte, pas d’application mécanique) :
 
 ```bash
-./scripts/swarm-run.sh agent-1 gpt-4o scout   # lecture seule
+./scripts/swarm-run.sh agent-1 sonnet-4.6 scout   # lecture seule
 ./scripts/swarm-run.sh agent-2 claude-sonnet builder
 ```
 
@@ -127,7 +127,7 @@ Lors du lancement d’un agent, tu peux préciser un rôle (rappel dans le conte
 |-----------------|----------|
 | Créer des issues | `sd create --title "..."` ou `./scripts/swarm-seeds-create.sh "..." "..."` |
 | Dispatcher      | `./scripts/swarm-dispatch.sh 2` |
-| Lancer un agent | `./scripts/swarm-run.sh agent-1 gpt-4o` (ou `swarm-sling.sh <issue-id>`) |
+| Lancer un agent | `./scripts/swarm-run.sh agent-1 sonnet-4.6` (ou `swarm-sling.sh <issue-id>`) |
 | Fermer l’issue  | Dans le worktree : `sd close <id> --reason "..."` |
 | Merger (terminés) | `git checkout main && ./scripts/swarm-merge.sh --completed` |
 | Nettoyer        | `./scripts/swarm-clean.sh [--merged-only] [--force]` |

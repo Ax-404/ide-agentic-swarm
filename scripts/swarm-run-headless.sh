@@ -3,7 +3,7 @@
 # Rôle(s): Builder (défaut) ou Scout si .role=scout (rappel lecture seule injecté). Voir docs/ROLES.md.
 # Exécute la tâche décrite dans TASK.md puis s'arrête. À la sortie : fermeture issue Seeds, logs.
 # Usage: ./scripts/swarm-run-headless.sh <agent-name> [model]
-# Exemple: ./scripts/swarm-run-headless.sh agent-1 gpt-4o
+# Exemple: ./scripts/swarm-run-headless.sh agent-1 sonnet-4.6
 # Référence: https://aider.chat/docs/scripting.html
 
 set -e
@@ -13,12 +13,12 @@ SWARM_DIR="${REPO_ROOT}/.swarm"
 # Afficher l'aide sans exiger aider
 [ "$1" = "-h" ] || [ "$1" = "--help" ] && {
   echo "Usage: $0 <agent-name> [model]"
-  echo "Exemple: $0 agent-1 gpt-4o"
+  echo "Exemple: $0 agent-1 sonnet-4.6"
   exit 0
 }
 
 AGENT_NAME="${1:?Usage: $0 <agent-name> [model]}"
-MODEL="${2:-gpt-4o}"
+MODEL="${2:-sonnet-4.6}"
 AGENT_DIR="${SWARM_DIR}/${AGENT_NAME}"
 
 "${REPO_ROOT}/scripts/swarm-check.sh" --require aider --quiet || exit 1

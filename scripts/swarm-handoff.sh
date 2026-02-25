@@ -119,4 +119,4 @@ while IFS= read -r line; do
   count=$((count + 1))
 done < <(handoffs)
 
-[ -z "$DRY_RUN" ] && [ "$count" -gt 0 ] && echo "" && echo "Handoff(s) appliqué(s). Lance l'agent avec: ./scripts/swarm-run.sh <agent> \${MODEL:-gpt-4o}"
+[ -z "$DRY_RUN" ] && [ "$count" -gt 0 ] && echo "" && echo "Handoff(s) appliqué(s). Lance l'agent avec: ./scripts/swarm-run.sh <agent> \${MODEL:-sonnet-4.6}"

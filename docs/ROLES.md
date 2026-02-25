@@ -31,7 +31,7 @@ Ce document définit les **rôles** utilisés dans le swarm ide-agentic : missio
 - **Mission** : Explorer le dépôt (stack, structure, points d’entrée, contraintes) et produire un rapport de contexte pour les autres rôles.
 - **Entrées** : Chemin du repo (ou racine du projet) + objectif ou question ciblée.
 - **Sorties** : Rapport texte (stack, layout des dossiers, fichiers clés, conventions détectées, recommandations). Pas de modification du code.
-- **Dans le pipeline** : Peut être exécuté avant ou en parallèle du Planner. Sortie consommée par Builder (contexte) ou par Planner (affiner le plan). En interactif, `swarm-run.sh agent-X gpt-4o scout` affiche un rappel « lecture seule » pour Aider.
+- **Dans le pipeline** : Peut être exécuté avant ou en parallèle du Planner. Sortie consommée par Builder (contexte) ou par Planner (affiner le plan). En interactif, `swarm-run.sh agent-X sonnet-4.6 scout` affiche un rappel « lecture seule » pour Aider.
 
 ### Builder
 

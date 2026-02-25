@@ -3,7 +3,7 @@
 # Rôle(s): Scout, Builder, Reviewer, Documenter, Red-team (voir docs/ROLES.md).
 # Usage: ./scripts/swarm-run.sh <agent-name> [model] [role]
 #   role = scout | builder | reviewer | documenter | red-team (optionnel ; sinon lu depuis .role).
-# Exemple: ./scripts/swarm-run.sh agent-1 gpt-4o
+# Exemple: ./scripts/swarm-run.sh agent-1 sonnet-4.6
 #          ./scripts/swarm-run.sh agent-2 claude-sonnet scout
 # Ouvrir un terminal par agent pour travailler en parallèle.
 
@@ -11,7 +11,7 @@ set -e
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SWARM_DIR="${REPO_ROOT}/.swarm"
 AGENT_NAME="${1:?Usage: $0 <agent-name> [model] [role]}"
-MODEL="${2:-gpt-4o}"
+MODEL="${2:-sonnet-4.6}"
 ROLE_ARG="${3:-}"
 AGENT_DIR="${SWARM_DIR}/${AGENT_NAME}"
 

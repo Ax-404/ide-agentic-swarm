@@ -66,7 +66,7 @@ Ouvre **N terminaux** (ou onglets). Dans chaque terminal, lance Aider dans le wo
 
 ```bash
 # Terminal 1 — agent 1 (ex. Builder)
-./scripts/swarm-run.sh agent-1 gpt-4o
+./scripts/swarm-run.sh agent-1 sonnet-4.6
 
 # Terminal 2 — agent 2 (ex. autre Builder ou Scout)
 ./scripts/swarm-run.sh agent-2 claude-sonnet
@@ -168,7 +168,7 @@ Si [Mulch](https://github.com/jayminwest/mulch) est installé, l’expertise du 
    git add .mulch && git commit -m "chore: mulch init"
    ```
 
-2. **En lançant un agent** avec `./scripts/swarm-run.sh agent-1 gpt-4o`, le script affiche automatiquement la sortie de `mulch prime` (contexte expertise) si `.mulch/` existe dans le worktree. Tu peux copier-coller ce bloc dans Aider en début de session pour ancrer l’agent.
+2. **En lançant un agent** avec `./scripts/swarm-run.sh agent-1 sonnet-4.6`, le script affiche automatiquement la sortie de `mulch prime` (contexte expertise) si `.mulch/` existe dans le worktree. Tu peux copier-coller ce bloc dans Aider en début de session pour ancrer l’agent.
 
 3. **En fin de session**, dans le worktree de l’agent, enregistrer les apprentissages (toi ou Aider via une commande shell) :
 
@@ -189,7 +189,7 @@ Si [Mulch](https://github.com/jayminwest/mulch) est installé, l’expertise du 
 | Créer 2 agents     | `./scripts/swarm-setup.sh 2` |
 | (Optionnel Seeds)  | `./scripts/swarm-seeds-create.sh "Titre 1" "Titre 2"` |
 | Éditer les tâches  | `vim .swarm/agent-1/TASK.md` (et agent-2) |
-| Lancer agent 1    | `./scripts/swarm-run.sh agent-1 gpt-4o` (terminal 1) |
+| Lancer agent 1    | `./scripts/swarm-run.sh agent-1 sonnet-4.6` (terminal 1) |
 | Lancer agent 2     | `./scripts/swarm-run.sh agent-2 claude-sonnet` (terminal 2) |
 | (Optionnel Seeds)  | Dans worktree: `sd update <id> --status in_progress` puis en fin `sd close <id> --reason "..."` |
 | (Optionnel Mulch)  | En fin de session: `mulch record <domaine> --type convention "..."` |
