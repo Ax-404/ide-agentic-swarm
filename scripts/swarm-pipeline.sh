@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Phase 6 — Pipeline autonome : dispatch → agents headless → merge (avec gate tests optionnel) → validation post-merge.
+# Rôle(s): Builder (orchestration dispatch + run-headless + merge ; chaque agent = Builder ou Scout si titre [Scout]). Voir docs/ROLES.md.
 # Usage: ./scripts/swarm-pipeline.sh [N] [--test "cmd"] [--validate "cmd"] [--rollback-on-validate-fail] [--parallel] [--on-conflict skip|reopen]
 #   N = nombre d'issues à dispatcher (défaut: 2)
 #   --test "cmd" = ne merger que les branches où "cmd" réussit dans le worktree (ex: make test, pytest)

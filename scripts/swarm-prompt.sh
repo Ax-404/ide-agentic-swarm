@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Entrée en langage naturel : décompose une demande via un LLM en sous-tâches puis lance le coordinateur.
+# Rôle(s): Planner (décomposition requête → liste de tâches). Voir docs/ROLES.md.
 # Usage: ./scripts/swarm-prompt.sh "Ajoute l'authentification et un middleware de logs" [--model gpt-4o] [--test "make test"] ...
 #        echo "Refactoriser le module API" | ./scripts/swarm-prompt.sh --stdin [options...]
 # Prérequis: OPENAI_API_BASE (proxy LiteLLM), curl, jq. Optionnel: OPENAI_API_KEY si le proxy l'exige.
@@ -55,7 +56,7 @@ fi
 command -v curl >/dev/null 2>&1 || { echo "Erreur: curl requis (appel API)."; exit 1; }
 
 # Appel API chat completions (OpenAI-compatible / LiteLLM)
-USER_PROMPT="The user wants to accomplish the following in a software project. Decompose this into a short list of concrete subtasks that can be done by coding agents. Return ONLY the list of subtask titles, one per line. No numbering, no explanation, no markdown. Each line will be used as a Seeds issue title. Keep titles concise (a few words each).
+USER_PROMPT="The user wants to accomplish the following in a software project. Decompose this into a short list of concrete subtasks that can be done by coding agents. Return ONLY the list of subtask titles, one per line. No numbering, no explanation, no markdown. Each line will be used as a Seeds issue title. Keep titles concise (a few words each). Prefix each line with one of: [Scout] for read-only exploration/report; [Reviewer] for code review (quality, tests, conventions); [Documenter] for updating or creating docs only; [Red-team] for challenging security/edge cases and reporting; [Builder] or no prefix for implementation tasks.
 
 User request:
 $PROMPT_TEXT"

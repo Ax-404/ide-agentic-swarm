@@ -225,7 +225,7 @@ Après qu’un agent a envoyé un message handoff (ex. `--to agent-2 --type hand
 | `swarm-setup.sh [N]` | Crée N worktrees (sans Seeds). |
 | `swarm-seeds-create.sh "T1" "T2"` | Crée les issues Seeds. |
 | `swarm-dispatch.sh [N]` | Assigne N issues open → worktrees + TASK.md. |
-| `swarm-run.sh agent-X [model]` | Aider interactif (+ mulch prime si .mulch). |
+| `swarm-run.sh agent-X [model] [scout\|builder]` | Aider interactif (+ mulch prime). Rôle `scout` = rappel lecture seule ; `builder` = défaut. Voir [ROLES.md](ROLES.md). |
 | `swarm-run-headless.sh agent-X [model]` | Aider non interactif (TASK.md, close/reopen issue). |
 | `swarm-pipeline.sh [N] [--test "cmd"] ...` | Dispatch → headless → merge (→ validate). |
 | `swarm-coordinate.sh "T1" "T2" [options]` | Crée issues + pipeline. |
@@ -236,4 +236,4 @@ Après qu’un agent a envoyé un message handoff (ex. `--to agent-2 --type hand
 | `swarm-mail.sh send|list|show` | Couche mail : retours en cours de tâche, handoffs, événements (en plus de Seeds). |
 | `swarm-handoff.sh [--limit N]` | Lit les handoffs mail → réassigne l'issue à l'agent cible (TASK.md + in_progress). |
 
-Voir aussi : [phase6-workflow.md](workflows/phase6-workflow.md), [utilisation-autres-projets.md](utilisation-autres-projets.md).
+Voir aussi : [phase6-workflow.md](workflows/phase6-workflow.md), [utilisation-autres-projets.md](utilisation-autres-projets.md), [ROLES.md](ROLES.md) (Planner, Scout, Builder, Reviewer, Documenter, Red-team).

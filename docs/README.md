@@ -10,6 +10,7 @@ Index de la documentation du projet **ide-agentic**.
 
 | [exemples-commandes.md](exemples-commandes.md) | **Helper** : tableau « Quel script pour quoi », exemples (setup, Seeds, coordinateur, prompt, pipeline, workflows, monitoring). |
 | [troubleshooting.md](troubleshooting.md) | **Dépannage** : Aider ne répond pas, sd introuvable, aucune issue ouverte, conflit au merge, mail vide, commandes de diagnostic. |
+| [ROLES.md](ROLES.md) | **Rôles** : Planner, Scout, Builder, Reviewer, Documenter, Red-team — mission, entrées/sorties, pipeline, mapping avec les scripts, contrats I/O pour outils externes. |
 
 ## Configuration et déploiement
 

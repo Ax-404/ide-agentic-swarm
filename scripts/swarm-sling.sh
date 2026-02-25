@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
-# Phase 3 — Sling: lance un agent pour une issue Seeds donnée (création worktree + TASK + claim).
-# Usage: ./scripts/swarm-sling.sh <issue-id> [model]
+# Phase 3 — Sling: lance un agent pour une issue Seeds donnée (création worktree + TASK + .role + claim).
+# Rôle(s): Builder (défaut) ou Scout si titre issue commence par [Scout] ou si 3e arg = scout. Voir docs/ROLES.md.
+# Usage: ./scripts/swarm-sling.sh <issue-id> [model] [role]
+#   role = scout | builder | reviewer | documenter | red-team (optionnel).
 # Exemple: ./scripts/swarm-sling.sh seeds-a1b2 gpt-4o
+#          ./scripts/swarm-sling.sh seeds-xxx gpt-4o scout
 # Prérequis: Seeds (sd), dépôt git, .seeds/ initialisé.
 
 set -e
@@ -10,13 +13,15 @@ SWARM_DIR="${REPO_ROOT}/.swarm"
 
 # Afficher l'aide sans exiger les prérequis
 [ "$1" = "-h" ] || [ "$1" = "--help" ] && {
-  echo "Usage: $0 <issue-id> [model]"
+  echo "Usage: $0 <issue-id> [model] [role]"
   echo "Exemple: $0 seeds-a1b2 gpt-4o"
+  echo "         $0 seeds-xxx gpt-4o scout"
   exit 0
 }
 
-ISSUE_ID="${1:?Usage: $0 <issue-id> [model]}"
+ISSUE_ID="${1:?Usage: $0 <issue-id> [model] [role]}"
 MODEL="${2:-gpt-4o}"
+ROLE_ARG="${3:-}"
 
 "${REPO_ROOT}/scripts/swarm-check.sh" --require seeds --quiet || exit 1
 cd "$REPO_ROOT"
@@ -47,10 +52,38 @@ if command -v jq >/dev/null 2>&1 && [ -f ".seeds/issues.jsonl" ]; then
 fi
 [ -z "$title" ] && title="$ISSUE_ID"
 
-swarm_task_md_content "$ISSUE_ID" "$title" "$desc" > "${dir}/TASK.md"
+# Rôle : 3e argument ou préfixe dans le titre (voir docs/ROLES.md)
+ROLE="builder"
+if [ -n "$ROLE_ARG" ]; then
+  case "$ROLE_ARG" in
+    scout)      ROLE="scout" ;;
+    reviewer)   ROLE="reviewer" ;;
+    documenter) ROLE="documenter" ;;
+    red-team)   ROLE="red-team" ;;
+    *)          ROLE="builder" ;;
+  esac
+fi
+if [ "$ROLE" = "builder" ]; then
+  if [[ "$title" =~ ^\[Scout\] ]]; then
+    ROLE="scout"
+    title=$(echo "$title" | sed 's/^\[Scout\] *//')
+  elif [[ "$title" =~ ^\[Reviewer\] ]]; then
+    ROLE="reviewer"
+    title=$(echo "$title" | sed 's/^\[Reviewer\] *//')
+  elif [[ "$title" =~ ^\[Documenter\] ]]; then
+    ROLE="documenter"
+    title=$(echo "$title" | sed 's/^\[Documenter\] *//')
+  elif [[ "$title" =~ ^\[Red-team\] ]]; then
+    ROLE="red-team"
+    title=$(echo "$title" | sed 's/^\[Red-team\] *//')
+  fi
+fi
+title_for_task="$title"
+echo "$ROLE" > "${dir}/.role"
+swarm_task_md_content "$ISSUE_ID" "$title_for_task" "$desc" > "${dir}/TASK.md"
 echo "$ISSUE_ID" > "${dir}/.issue_id"
 sd update "$ISSUE_ID" --status in_progress
 [ -x "${REPO_ROOT}/scripts/swarm-log.sh" ] && "${REPO_ROOT}/scripts/swarm-log.sh" sling "$ISSUE_ID" "$name" "$MODEL"
-echo "Issue $ISSUE_ID → $name (in_progress). Lancement Aider..."
+echo "Issue $ISSUE_ID → $name ($ROLE, in_progress). Lancement Aider..."
 echo ""
-exec "${REPO_ROOT}/scripts/swarm-run.sh" "$name" "$MODEL"
+exec "${REPO_ROOT}/scripts/swarm-run.sh" "$name" "$MODEL" "$ROLE"

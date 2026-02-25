@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Évolution lot 2 — Coordinateur : crée les issues Seeds à partir d'une liste de tâches puis lance le pipeline.
+# Rôle(s): Planner (entrée : liste de tâches ; sortie : issues Seeds + pipeline Builder). Voir docs/ROLES.md.
 # Usage: ./scripts/swarm-coordinate.sh "Titre 1" "Titre 2" "Titre 3" [--test "cmd"] [--on-conflict skip|reopen] [--parallel]
 #        ./scripts/swarm-coordinate.sh --file tasks.txt [options pipeline...]
 # Fichier tasks.txt : une tâche par ligne (titre seul, ou "titre|description" pour usage futur).

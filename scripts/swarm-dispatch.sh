@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Phase 3 — Dispatch: récupère les issues prêtes (Seeds), crée un worktree par issue,
-# écrit TASK.md + .issue_id, marque l'issue in_progress.
+# écrit TASK.md + .issue_id + .role, marque l'issue in_progress.
+# Rôle(s): Builder (exécution) ; si le titre d'issue commence par [Scout], rôle Scout (lecture seule). Voir docs/ROLES.md.
 # Les issues sont triées par priorité (champ priority dans .seeds/issues.jsonl, plus petite = plus prioritaire).
 # Usage: ./scripts/swarm-dispatch.sh [N]   (N = nombre d'agents à lancer, défaut: 2)
 # Prérequis: Seeds (sd), dépôt git, .seeds/ initialisé.
@@ -58,10 +59,27 @@ while IFS='|' read -r issue_id title; do
   fi
   [ -z "$title" ] && title="$issue_id"
 
-  swarm_task_md_content "$issue_id" "$title" "$desc" > "${dir}/TASK.md"
+  # Rôle depuis préfixe dans le titre (convention, voir docs/ROLES.md)
+  ROLE="builder"
+  title_for_task="$title"
+  if [[ "$title" =~ ^\[Scout\] ]]; then
+    ROLE="scout"
+    title_for_task=$(echo "$title" | sed 's/^\[Scout\] *//')
+  elif [[ "$title" =~ ^\[Reviewer\] ]]; then
+    ROLE="reviewer"
+    title_for_task=$(echo "$title" | sed 's/^\[Reviewer\] *//')
+  elif [[ "$title" =~ ^\[Documenter\] ]]; then
+    ROLE="documenter"
+    title_for_task=$(echo "$title" | sed 's/^\[Documenter\] *//')
+  elif [[ "$title" =~ ^\[Red-team\] ]]; then
+    ROLE="red-team"
+    title_for_task=$(echo "$title" | sed 's/^\[Red-team\] *//')
+  fi
+  echo "$ROLE" > "${dir}/.role"
+  swarm_task_md_content "$issue_id" "$title_for_task" "$desc" > "${dir}/TASK.md"
   echo "$issue_id" > "${dir}/.issue_id"
   sd update "$issue_id" --status in_progress
-  echo "  Assigné: $issue_id → $name (in_progress)"
+  echo "  Assigné: $issue_id → $name ($ROLE, in_progress)"
 done < <(get_open_issues | head -n "$N")
 # Si aucun agent créé, count=0
 

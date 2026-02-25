@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Phase 2 — Initialise Seeds (sd) et crée une issue par sous-tâche pour les agents.
+# Rôle(s): Planner (création des issues ; titres peuvent être préfixés [Scout] ou [Builder] pour le dispatch). Voir docs/ROLES.md.
 # Usage: ./scripts/swarm-seeds-create.sh "Titre tâche 1" "Titre tâche 2" [...]
 # À lancer depuis la racine du dépôt (avant ou après swarm-setup.sh).
 # Prérequis: Seeds installé (sd en PATH, voir https://github.com/jayminwest/seeds).

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Phase 6 — Lance Aider en mode non interactif (scripting) dans le worktree d'un agent.
+# Rôle(s): Builder (défaut) ou Scout si .role=scout (rappel lecture seule injecté). Voir docs/ROLES.md.
 # Exécute la tâche décrite dans TASK.md puis s'arrête. À la sortie : fermeture issue Seeds, logs.
 # Usage: ./scripts/swarm-run-headless.sh <agent-name> [model]
 # Exemple: ./scripts/swarm-run-headless.sh agent-1 gpt-4o
@@ -38,30 +39,56 @@ fi
 
 cd "$AGENT_DIR"
 
-# Contexte Mulch optionnel : préfixer le message avec mulch prime pour que l'agent reçoive l'expertise
+# Rôle : scout | builder | reviewer | documenter | red-team (voir docs/ROLES.md)
+ROLE="builder"
+[ -f ".role" ] && ROLE=$(cat .role 2>/dev/null) || true
+case "$ROLE" in
+  scout|reviewer|documenter|red-team) ;;
+  *) ROLE="builder" ;;
+esac
+
+# Contexte Mulch optionnel + rappel de rôle : construire le message envoyé à Aider
 MESSAGE_FILE="TASK.md"
 TEMP_MSG=""
-if [ -d ".mulch" ]; then
-  MULCH_CMD=""
-  if command -v mulch >/dev/null 2>&1; then
-    MULCH_CMD="mulch"
-  elif command -v npx >/dev/null 2>&1; then
-    MULCH_CMD="npx -y mulch-cli"
+build_message() {
+  case "$ROLE" in
+    scout)
+      echo "Rôle: Scout (lecture seule — ne pas modifier les fichiers)."
+      echo ""; echo "---"; echo ""
+      ;;
+    reviewer)
+      echo "Rôle: Reviewer — revoir le code (qualité, tests, conventions) ; rapport ou corrections ciblées."
+      echo ""; echo "---"; echo ""
+      ;;
+    documenter)
+      echo "Rôle: Documenter — mettre à jour ou créer la doc (README, API, ADR) ; ne pas modifier la logique métier."
+      echo ""; echo "---"; echo ""
+      ;;
+    red-team)
+      echo "Rôle: Red-team — challenger edge cases, sécurité, scénarios d'échec ; rapport et recommandations."
+      echo ""; echo "---"; echo ""
+      ;;
+  esac
+  if [ -d ".mulch" ] && [ -n "$MULCH_CMD" ]; then
+    echo "# Contexte expertise (mulch prime)"
+    echo ""
+    $MULCH_CMD prime 2>/dev/null || true
+    echo ""
+    echo "---"
+    echo ""
   fi
-  if [ -n "$MULCH_CMD" ]; then
-    TEMP_MSG="${AGENT_DIR}/.message_headless.$$"
-    {
-      echo "# Contexte expertise (mulch prime)"
-      echo ""
-      $MULCH_CMD prime 2>/dev/null || true
-      echo ""
-      echo "---"
-      echo ""
-      cat TASK.md
-    } > "$TEMP_MSG"
-    MESSAGE_FILE=".message_headless.$$"
-    trap 'rm -f "$AGENT_DIR/.message_headless.$$"' EXIT
-  fi
+  cat TASK.md
+}
+MULCH_CMD=""
+command -v mulch >/dev/null 2>&1 && MULCH_CMD="mulch" || command -v npx >/dev/null 2>&1 && MULCH_CMD="npx -y mulch-cli"
+NEED_BUILD=0
+[ "$ROLE" = "scout" ] || [ "$ROLE" = "reviewer" ] || [ "$ROLE" = "documenter" ] || [ "$ROLE" = "red-team" ] && NEED_BUILD=1
+[ -d ".mulch" ] && [ -n "$MULCH_CMD" ] && NEED_BUILD=1
+if [ "$NEED_BUILD" -eq 1 ]; then
+  TEMP_MSG="${AGENT_DIR}/.message_headless.$$"
+  build_message > "$TEMP_MSG"
+  MESSAGE_FILE=".message_headless.$$"
+  trap 'rm -f "$AGENT_DIR/.message_headless.$$"' EXIT
 fi
 
 # PID pour le watchdog (optionnel en headless)

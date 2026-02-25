@@ -74,6 +74,8 @@ ide-agentic/
 6. **Phase 5 (évolution)** : [docs/workflows/phase5-workflow.md](docs/workflows/phase5-workflow.md) — IDE (Cursor/VS Code), autres clients, coûts ; tâches dans `.vscode/tasks.json`.
 7. **Phase 6 (autonomie)** : [docs/workflows/phase6-workflow.md](docs/workflows/phase6-workflow.md) — agent headless, pipeline autonome, merge avec gate tests, rollback.
 
+**Rôles** : Le swarm distingue Planner (décomposition → tâches), Scout (exploration lecture seule), Builder (exécution code), Reviewer, Documenter, Red-team. Détail et mapping scripts / contrats I/O : [docs/ROLES.md](docs/ROLES.md).
+
 ## Commandes Phase 2
 
 ```bash
