@@ -1,14 +1,14 @@
 # Phase 2 — Workflow multi-agents manuels
 
-Procédure reproductible pour faire travailler plusieurs Aider en parallèle dans des worktrees git distincts, puis merger les résultats à la main.
+Procédure reproductible pour faire travailler plusieurs pi (coding agent) en parallèle dans des worktrees git distincts, puis merger les résultats à la main.
 
 ---
 
 ## Prérequis
 
 - Dépôt **git** initialisé avec au moins un commit (`git init && git add . && git commit -m "initial"`).
-- **Aider** installé et configuré (voir [config-litelmm-tailscale-aider.md](../config-litelmm-tailscale-aider.md)) : proxy configuré (Aider selon sa doc ; pour swarm-prompt.sh : `LITELLM_API_BASE` ou `OPENROUTER_API_KEY`).
-- **Phase 1** validée (proxy LiteLLM + Tailscale + Aider qui répond).
+- **pi** installé (`npm install -g @mariozechner/pi-coding-agent`) et configuré (voir [config-litelmm-tailscale-aider.md](../config-litelmm-tailscale-aider.md)) : proxy configuré ; pour swarm-prompt.sh : `LITELLM_API_BASE` ou `OPENROUTER_API_KEY`.
+- **Phase 1** validée (proxy LiteLLM + Tailscale + pi qui répond).
 - **Optionnel** : [Seeds](https://github.com/jayminwest/seeds) (CLI `sd`) pour une issue par sous-tâche ; [Mulch](https://github.com/jayminwest/mulch) pour l’expertise cumulée (sections 8 et 9).
 
 ---
@@ -60,9 +60,9 @@ Contenu type : objectif, liste de fichiers concernés, contraintes, critère de 
 
 ---
 
-## 4. Lancer N Aider en parallèle (un terminal par agent)
+## 4. Lancer N pi en parallèle (un terminal par agent)
 
-Ouvre **N terminaux** (ou onglets). Dans chaque terminal, lance Aider dans le worktree de l’agent, avec optionnellement un modèle différent par rôle :
+Ouvre **N terminaux** (ou onglets). Dans chaque terminal, lance pi dans le worktree de l’agent, avec optionnellement un modèle différent par rôle :
 
 ```bash
 # Terminal 1 — agent 1 (ex. Builder)
@@ -72,15 +72,15 @@ Ouvre **N terminaux** (ou onglets). Dans chaque terminal, lance Aider dans le wo
 ./scripts/swarm-run.sh agent-2 claude-sonnet
 ```
 
-Le script affiche le contenu de `TASK.md` ; tu peux le donner à Aider en début de session (« Voici ta tâche : … » ou en référençant le fichier).
+Le script affiche le contenu de `TASK.md` ; tu peux le donner à pi en début de session (« Voici ta tâche : … » ou en référençant le fichier).
 
-Chaque instance Aider travaille dans son répertoire (son worktree) ; les modifications restent sur la branche `swarm/agent-X`.
+Chaque instance pi travaille dans son répertoire (son worktree) ; les modifications restent sur la branche `swarm/agent-X`.
 
 ---
 
 ## 5. Quand chaque agent a terminé
 
-- Chaque agent commit ses changements dans son worktree (tu peux le faire toi-même ou demander à Aider) :
+- Chaque agent commit ses changements dans son worktree (tu peux le faire toi-même ou demander à pi) :
 
   ```bash
   cd .swarm/agent-1
@@ -136,7 +136,7 @@ Si [Seeds](https://github.com/jayminwest/seeds) (CLI `sd`) est installé, tu peu
 
    Le script fait `sd init` si besoin, crée une issue par argument et affiche le mapping `agent-1` → `seeds-xxx`, `agent-2` → `seeds-yyy`.
 
-2. **Dans chaque worktree**, avant ou en début de session Aider : marquer l’issue comme en cours et (optionnel) l’écrire dans `TASK.md` :
+2. **Dans chaque worktree**, avant ou en début de session pi : marquer l’issue comme en cours et (optionnel) l’écrire dans `TASK.md` :
 
    ```bash
    cd .swarm/agent-1
@@ -168,9 +168,9 @@ Si [Mulch](https://github.com/jayminwest/mulch) est installé, l’expertise du 
    git add .mulch && git commit -m "chore: mulch init"
    ```
 
-2. **En lançant un agent** avec `./scripts/swarm-run.sh agent-1 sonnet-4.6`, le script affiche automatiquement la sortie de `mulch prime` (contexte expertise) si `.mulch/` existe dans le worktree. Tu peux copier-coller ce bloc dans Aider en début de session pour ancrer l’agent.
+2. **En lançant un agent** avec `./scripts/swarm-run.sh agent-1 sonnet-4.6`, le script affiche automatiquement la sortie de `mulch prime` (contexte expertise) si `.mulch/` existe dans le worktree. Tu peux copier-coller ce bloc dans pi en début de session pour ancrer l’agent.
 
-3. **En fin de session**, dans le worktree de l’agent, enregistrer les apprentissages (toi ou Aider via une commande shell) :
+3. **En fin de session**, dans le worktree de l’agent, enregistrer les apprentissages (toi ou pi via une commande shell) :
 
    ```bash
    cd .swarm/agent-1
@@ -203,5 +203,5 @@ Si [Mulch](https://github.com/jayminwest/mulch) est installé, l’expertise du 
 
 - **Découpage** : privilégier des sous-tâches sur des fichiers différents pour réduire les conflits au merge.
 - **Modèles** : tu peux attribuer un modèle par rôle (ex. Scout = Kimi, Builder = MiniMax) en passant le nom du modèle dans `swarm-run.sh`.
-- **TASK.md** : garder la spec courte et claire ; Aider s’en sert comme objectif pour la session.
+- **TASK.md** : garder la spec courte et claire ; pi s’en sert comme objectif pour la session.
 - **Commit souvent** dans chaque worktree pour ne pas perdre le travail et faciliter le merge.

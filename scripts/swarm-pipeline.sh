@@ -48,8 +48,8 @@ done
 cd "$REPO_ROOT"
 
 # CWD : ce script reste en REPO_ROOT ; dispatch/merge s'exécutent ici ; headless est lancé en sous-processus dans son worktree.
-# Prérequis : Seeds + aider (pipeline lance dispatch et headless)
-"${REPO_ROOT}/scripts/swarm-check.sh" --require seeds --require aider --quiet || exit 1
+# Prérequis : Seeds + pi (pipeline lance dispatch et headless)
+"${REPO_ROOT}/scripts/swarm-check.sh" --require seeds --require pi --quiet || exit 1
 
 # 1 — Dispatch : créer worktrees et assigner N issues
 echo "=== Dispatch ($N agents) ==="

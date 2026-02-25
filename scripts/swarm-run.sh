@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Phase 2/3 — Lance Aider dans le worktree d'un agent.
+# Phase 2/3 — Lance pi (coding agent) dans le worktree d'un agent.
 # Rôle(s): Scout, Builder, Reviewer, Documenter, Red-team (voir docs/ROLES.md).
 # Usage: ./scripts/swarm-run.sh <agent-name> [model] [role]
 #   role = scout | builder | reviewer | documenter | red-team (optionnel ; sinon lu depuis .role).
@@ -48,7 +48,7 @@ if [ -d ".mulch" ]; then
     MULCH_CMD="npx -y mulch-cli"
   fi
   if [ -n "$MULCH_CMD" ]; then
-    echo "--- Contexte expertise (mulch prime) — à donner à Aider si utile ---"
+    echo "--- Contexte expertise (mulch prime) — à donner à pi si utile ---"
     $MULCH_CMD prime 2>/dev/null || true
     echo "--- Fin mulch prime ---"
     echo ""
@@ -68,13 +68,13 @@ TASK_FILE="TASK.md"
 if [ -f "$TASK_FILE" ]; then
   echo "--- Tâche pour cet agent (TASK.md) ---"
   cat "$TASK_FILE"
-  echo "--- Fin TASK.md — donne cette tâche à Aider ---"
+  echo "--- Fin TASK.md — donne cette tâche à pi ---"
   echo ""
 fi
 
-echo "Lancement Aider dans $AGENT_DIR (modèle: $MODEL, rôle: $ROLE)"
+echo "Lancement pi dans $AGENT_DIR (modèle: $MODEL, rôle: $ROLE)"
 echo "Le proxy LLM est utilisé si configuré (voir doc config)."
 echo ""
-# Phase 4: enregistrer le PID pour le watchdog (après exec ce sera le PID d'aider)
+# Phase 4: enregistrer le PID pour le watchdog (après exec ce sera le PID de pi)
 echo $$ > .pid
-exec aider --model "$MODEL" .
+exec pi --model "$MODEL" .

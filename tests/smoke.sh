@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tests smoke : vérifications minimales pour valider les scripts swarm sans environnement complet (sd, aider).
+# Tests smoke : vérifications minimales pour valider les scripts swarm sans environnement complet (sd, pi).
 # Usage: ./tests/smoke.sh   (depuis la racine du projet)
 # À lancer après modifications des scripts pour vérifier que check, mail et common fonctionnent.
 

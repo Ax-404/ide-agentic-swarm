@@ -1,13 +1,13 @@
-# Configuration LiteLLM + Mac Mini / MacBook M1 + Tailscale + Aider
+# Configuration LiteLLM + Mac Mini / MacBook M1 + Tailscale + pi
 
-Guide pour héberger le proxy LiteLLM sur un Mac Mini M2, y accéder depuis un MacBook M1 via Tailscale, et configurer Aider pour l’utiliser.
+Guide pour héberger le proxy LiteLLM sur un Mac Mini M2, y accéder depuis un MacBook M1 via Tailscale, et configurer pi pour l’utiliser.
 
 ---
 
 ## 1. Prérequis
 
 - **Mac Mini M2** : serveur proxy (allumé sur le réseau, idéalement sans veille)
-- **MacBook M1** : machine de travail (Aider, terminal)
+- **MacBook M1** : machine de travail (pi, terminal)
 - **Tailscale** : installé et connecté sur les deux machines, même compte
 - **Python 3** ou **Docker** sur le Mac Mini (pour LiteLLM)
 
@@ -118,7 +118,7 @@ curl http://127.0.0.1:4000/health
 
 ---
 
-## 4. MacBook M1 — configurer Aider pour utiliser le proxy
+## 4. MacBook M1 — configurer pi pour utiliser le proxy
 
 ### URL du proxy via Tailscale
 
@@ -142,14 +142,14 @@ Puis :
 source ~/.zshrc
 ```
 
-### Lancer Aider
+### Lancer pi
 
-Configurer Aider pour utiliser l’URL du proxy (voir documentation Aider). Le modèle sera celui configuré sur le proxy (ex. `sonnet-4.6`, `gpt-4o`, `claude-sonnet`, ou les alias définis dans `config.yaml`) :
+Configurer pi pour utiliser l’URL du proxy (voir documentation pi). Le modèle sera celui configuré sur le proxy (ex. `sonnet-4.6`, `gpt-4o`, `claude-sonnet`, ou les alias définis dans `config.yaml`) :
 
 ```bash
-aider --model sonnet-4.6
+pi --model sonnet-4.6
 # ou
-aider --model gpt-4o
+pi --model gpt-4o
 ```
 
 Les appels partent du MacBook → Tailscale → Mac Mini (proxy) → API du provider (OpenAI, Anthropic, etc.).
@@ -160,11 +160,11 @@ Les appels partent du MacBook → Tailscale → Mac Mini (proxy) → API du prov
 
 | Étape | Où | Quoi |
 |-------|-----|------|
-| 1 | MacBook | Aider envoie une requête vers l’URL du proxy (Tailscale du Mac Mini) |
+| 1 | MacBook | pi envoie une requête vers l’URL du proxy (Tailscale du Mac Mini) |
 | 2 | Tailscale | Tunnel chiffré MacBook ↔ Mac Mini |
 | 3 | Mac Mini | LiteLLM reçoit la requête, appelle l’API du provider (OpenAI, etc.) |
 | 4 | Mac Mini | LiteLLM renvoie la réponse au MacBook |
-| 5 | MacBook | Aider reçoit la réponse et continue |
+| 5 | MacBook | pi reçoit la réponse et continue |
 
 ---
 
@@ -179,7 +179,7 @@ Les appels partent du MacBook → Tailscale → Mac Mini (proxy) → API du prov
   - Autoriser les connexions entrantes sur le port 4000 (ou désactiver temporairement le pare-feu pour tester).
 
 - **Modèle inconnu**  
-  - Vérifier que le `model_name` utilisé par Aider est bien déclaré dans `config.yaml` sur le Mac Mini.
+  - Vérifier que le `model_name` utilisé par pi est bien déclaré dans `config.yaml` sur le Mac Mini.
 
 - **Clés API**  
   - Les clés des providers (OpenAI, Anthropic, etc.) sont sur le **Mac Mini** (dans l’env ou le fichier de config). Le MacBook n’a besoin que de l’URL du proxy (et éventuellement d’une clé si tu configures l’auth sur le proxy).
@@ -188,12 +188,12 @@ Les appels partent du MacBook → Tailscale → Mac Mini (proxy) → API du prov
 
 ## 7. Option : garder une config locale sans proxy
 
-Si le Mac Mini est éteint ou inaccessible, tu peux basculer Aider vers l’API directe :
+Si le Mac Mini est éteint ou inaccessible, tu peux basculer pi vers l’API directe :
 
 ```bash
 # Désactiver le proxy (pour utiliser OpenAI / autre directement)
 unset LITELLM_API_BASE
-# Puis configurer le provider direct selon la doc Aider
+# Puis configurer le provider direct selon la doc pi
 ```
 
 Ou utiliser un fichier `.env` ou un script qui active/désactive `LITELLM_API_BASE` selon que tu es sur le même réseau Tailscale que le Mac Mini ou non.

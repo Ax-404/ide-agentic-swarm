@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Phase 4 — Watchdog : vérifie que les processus Aider (PIDs dans .swarm/agent-*/.pid) sont vivants.
+# Phase 4 — Watchdog : vérifie que les processus pi (PIDs dans .swarm/agent-*/.pid) sont vivants.
 # Usage: ./scripts/swarm-watch.sh [--interval SEC] [--once] [--relaunch]
 #   --interval SEC  (défaut: 30) seconde(s) entre chaque vérification
 #   --once          une seule passe, puis quitter

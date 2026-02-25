@@ -31,21 +31,21 @@ Ce document définit les **rôles** utilisés dans le swarm ide-agentic : missio
 - **Mission** : Explorer le dépôt (stack, structure, points d’entrée, contraintes) et produire un rapport de contexte pour les autres rôles.
 - **Entrées** : Chemin du repo (ou racine du projet) + objectif ou question ciblée.
 - **Sorties** : Rapport texte (stack, layout des dossiers, fichiers clés, conventions détectées, recommandations). Pas de modification du code.
-- **Dans le pipeline** : Peut être exécuté avant ou en parallèle du Planner. Sortie consommée par Builder (contexte) ou par Planner (affiner le plan). En interactif, `swarm-run.sh agent-X sonnet-4.6 scout` affiche un rappel « lecture seule » pour Aider.
+- **Dans le pipeline** : Peut être exécuté avant ou en parallèle du Planner. Sortie consommée par Builder (contexte) ou par Planner (affiner le plan). En interactif, `swarm-run.sh agent-X sonnet-4.6 scout` affiche un rappel « lecture seule » pour pi.
 
 ### Builder
 
 - **Mission** : Implémenter les tâches : modifier le code, ajouter tests, respecter les contraintes. C’est le rôle « exécution » du plan.
 - **Entrées** : Plan (liste de tâches / issues Seeds) + contexte (rapport Scout ou Mulch prime) ; chaque agent reçoit une issue + TASK.md.
 - **Sorties** : Fichiers modifiés (commits dans le worktree), résumé des changements, statut (issue fermée via `sd close` ou rouverte).
-- **Dans le pipeline** : Après Planner (et optionnellement Scout). Dispatch assigne N issues → N worktrees ; chaque agent Aider incarne un Builder. Merge agrège les branches.
+- **Dans le pipeline** : Après Planner (et optionnellement Scout). Dispatch assigne N issues → N worktrees ; chaque agent pi incarne un Builder. Merge agrège les branches.
 
 ### Reviewer
 
 - **Mission** : Revoir le code (qualité, tests, conventions, bugs, perf) et produire un rapport (bloquant / important / suggestion) ou approve / request changes.
 - **Entrées** : Diff (ou ensemble de fichiers / PR) ; optionnel : critères de review (conventions, checklist).
 - **Sorties** : Rapport de review structuré (niveau par point : bloquant / important / suggestion) ; décision : approve ou request changes.
-- **Dans le pipeline** : Après Builder, avant ou après merge. Aujourd’hui non automatisé dans le swarm : peut être incarné par un agent Aider dédié (worktree + TASK.md « review les changements de la branche X ») ou par un outil externe qui lit le diff et appelle un LLM.
+- **Dans le pipeline** : Après Builder, avant ou après merge. Aujourd’hui non automatisé dans le swarm : peut être incarné par un agent pi dédié (worktree + TASK.md « review les changements de la branche X ») ou par un outil externe qui lit le diff et appelle un LLM.
 
 ### Documenter
 
@@ -69,7 +69,7 @@ Ce document définit les **rôles** utilisés dans le swarm ide-agentic : missio
 |------|------------------------|-------------|
 | **Planner** | `swarm-prompt.sh` (LLM décompose requête → titres) ; `swarm-coordinate.sh` (reçoit la liste et crée les issues). | Le « Planner » est le couple prompt LLM + coordinateur : entrée = requête, sortie = issues Seeds. Un orchestrateur externe peut remplacer `swarm-prompt.sh` et appeler directement `swarm-coordinate.sh --file tasks.txt`. |
 | **Scout** | `swarm-run.sh … scout`, `swarm-run-headless.sh` (lit `.role`), `swarm-dispatch.sh` / `swarm-sling.sh` (écrivent `.role` si titre `[Scout]` ou arg `scout`). | Titre issue préfixé `[Scout]` ou 3ᵉ arg `scout` pour sling ; rappel lecture seule injecté en headless ou affiché en interactif. |
-| **Builder** | `swarm-dispatch.sh`, `swarm-sling.sh`, `swarm-run.sh` (défaut), `swarm-run-headless.sh`, `swarm-pipeline.sh`, `swarm-merge.sh`. | Tout le flux dispatch → worktrees → Aider (TASK.md + .role) → sd close → merge. Chaque worktree = Builder, Scout, Reviewer, Documenter ou Red-team selon `.role`. |
+| **Builder** | `swarm-dispatch.sh`, `swarm-sling.sh`, `swarm-run.sh` (défaut), `swarm-run-headless.sh`, `swarm-pipeline.sh`, `swarm-merge.sh`. | Tout le flux dispatch → worktrees → pi (TASK.md + .role) → sd close → merge. Chaque worktree = Builder, Scout, Reviewer, Documenter ou Red-team selon `.role`. |
 | **Reviewer** | Même chaîne que Scout/Builder : `[Reviewer]` dans le titre ou 3ᵉ arg sling → `.role=reviewer` → rappel injecté (run/run-headless). | Revue code (qualité, tests, conventions) ; rapport ou corrections ciblées. |
 | **Documenter** | Idem : `[Documenter]` → `.role=documenter` → rappel « doc seulement, pas de logique métier ». | Mise à jour ou création de doc (README, API, ADR). |
 | **Red-team** | Idem : `[Red-team]` → `.role=red-team` → rappel « challenger edge cases, sécurité ». | Rapport de risques et recommandations. |
@@ -107,7 +107,7 @@ Ce document définit les **rôles** utilisés dans le swarm ide-agentic : missio
 - **Fichier `.role`** : Dans chaque worktree (`.swarm/agent-X/`), le script écrit un fichier `.role` contenant `scout`, `builder`, `reviewer`, `documenter` ou `red-team`. Rempli par :
   - **dispatch** : selon le préfixe du titre de l’issue Seeds ;
   - **sling** : selon le 3ᵉ argument (`scout`|`builder`|`reviewer`|`documenter`|`red-team`) ou le préfixe du titre.
-- **run-headless** : lit `.role` et injecte en tête du message envoyé à Aider un rappel selon le rôle (Scout = lecture seule ; Reviewer = revue/corrections ciblées ; Documenter = doc seulement ; Red-team = challenger/rapport).
+- **run-headless** : lit `.role` et injecte en tête du message envoyé à pi un rappel selon le rôle (Scout = lecture seule ; Reviewer = revue/corrections ciblées ; Documenter = doc seulement ; Red-team = challenger/rapport).
 - **swarm-run.sh** (interactif) : utilise le 3ᵉ argument si fourni, sinon lit `.role` dans le worktree ; affiche le même rappel de rôle qu’en headless.
 - **swarm-prompt.sh** : le prompt LLM demande d’utiliser les préfixes `[Scout]`, `[Reviewer]`, `[Documenter]`, `[Red-team]` ou `[Builder]`/aucun selon le type de tâche.
 
@@ -182,7 +182,7 @@ En résumé : **TASK.md est utile** pour le rôle dans la situation : mets dans 
 | Planner (interne) | `swarm-prompt.sh` | Requête (arg ou stdin) | Liste titres → `swarm-coordinate.sh` |
 | Planner (externe) | — | — | Fichier `tasks.txt` ou liste d’args |
 | Coordinateur | `swarm-coordinate.sh` | `--file tasks.txt` ou "T1" "T2" … + options | Issues Seeds + lancement pipeline |
-| Scout | `swarm-run.sh … scout` | TASK.md (manuel) + rappel rôle | Rapport (sortie Aider / copier-coller) |
+| Scout | `swarm-run.sh … scout` | TASK.md (manuel) + rappel rôle | Rapport (sortie pi / copier-coller) |
 | Builder | `swarm-dispatch.sh` + `swarm-run-headless.sh` (ou `swarm-run.sh`) | Issues open + TASK.md par worktree | Commits, issues closed, branches à merger |
 | Merge | `swarm-merge.sh` | Branches swarm/* | Branche cible mise à jour |
 | État | `sd list`, `.seeds/issues.jsonl`, `swarm-dashboard.sh`, `swarm-mail.sh show` | — | État des issues, agents, messages |

@@ -1,6 +1,6 @@
 # Tâche pour cet agent
 
-Décris ici la sous-tâche que cet agent doit réaliser. Aider lira ce fichier (ou tu peux copier-coller le contenu dans le chat). Quand les issues sont créées par le coordinateur / dispatch, le contenu ci-dessous est généré à partir du **titre** et de la **description** de l’issue Seeds. Pour donner un vrai « system prompt » à l’agent (rôle dans la situation actuelle), mets dans la **description de l’issue** un bloc « Rôle et contexte » — voir `docs/ROLES.md` section « System prompt dans TASK.md ».
+Décris ici la sous-tâche que cet agent doit réaliser. pi lira ce fichier (ou tu peux copier-coller le contenu dans le chat). Quand les issues sont créées par le coordinateur / dispatch, le contenu ci-dessous est généré à partir du **titre** et de la **description** de l’issue Seeds. Pour donner un vrai « system prompt » à l’agent (rôle dans la situation actuelle), mets dans la **description de l’issue** un bloc « Rôle et contexte » — voir `docs/ROLES.md` section « System prompt dans TASK.md ».
 
 ---
 

@@ -4,14 +4,14 @@ Commandes de diagnostic et solutions courantes. À lancer **depuis la racine du 
 
 ---
 
-## Aider ne répond pas / erreur API
+## pi / LLM ne répond pas / erreur API
 
-**Symptômes :** Aider tourne mais n’envoie pas de requêtes, ou erreur type « connection refused », « API key », « 401 ».
+**Symptômes :** pi (ou le client LLM) tourne mais n’envoie pas de requêtes, ou erreur type « connection refused », « API key », « 401 ».
 
 **À vérifier :**
 
 1. **Variables LLM (swarm-prompt.sh)**  
-   Définir **LITELLM_API_BASE** (URL du proxy LiteLLM) ou **OPENROUTER_API_KEY** (clé OpenRouter). Si LiteLLM : `echo $LITELLM_API_BASE` doit pointer vers le proxy (ex. `http://macmini.ton-tailnet.ts.net:4000`). Voir [exemples-commandes.md](exemples-commandes.md) (section Prompt) et [config-litelmm-tailscale-aider.md](config-litelmm-tailscale-aider.md). Pour Aider, configurer le proxy selon sa doc.
+   Définir **LITELLM_API_BASE** (URL du proxy LiteLLM) ou **OPENROUTER_API_KEY** (clé OpenRouter). Si LiteLLM : `echo $LITELLM_API_BASE` doit pointer vers le proxy (ex. `http://macmini.ton-tailnet.ts.net:4000`). Voir [exemples-commandes.md](exemples-commandes.md) (section Prompt) et [config-litelmm-tailscale-aider.md](config-litelmm-tailscale-aider.md). Pour pi, configurer le proxy selon sa doc (variables d'environnement LLM).
 
 2. **Réseau**  
    Si proxy LiteLLM sur une autre machine : Tailscale ou VPN actif, test `curl "$LITELLM_API_BASE/v1/models"`. Avec OpenRouter, pas de proxy à joindre.

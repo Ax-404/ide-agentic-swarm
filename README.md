@@ -1,6 +1,6 @@
 # ide-agentic
 
-Projet **IDE agentique type swarm** : plusieurs agents Aider en parallèle (worktrees git), orchestrés manuellement puis en Phase 3 de façon automatisée, avec un proxy LiteLLM (Mac Mini) accessible via Tailscale. Optionnel : **[Mulch](https://github.com/jayminwest/mulch)** (expertise cumulée, `mulch record` / `mulch prime`) et **[Seeds](https://github.com/jayminwest/seeds)** (issues git-native, CLI `sd`) pour mémoire et suivi de tâches compatibles multi-agent. Mulch et Seeds sont **agnostiques** (pas limités à Claude) : Mulch supporte Aider via `mulch setup aider`, Seeds est un CLI appelable par tout processus.
+Projet **IDE agentique type swarm** : plusieurs agents **pi** (coding agent) en parallèle (worktrees git), orchestrés manuellement puis en Phase 3 de façon automatisée, avec un proxy LiteLLM (Mac Mini) accessible via Tailscale. Optionnel : **[Mulch](https://github.com/jayminwest/mulch)** (expertise cumulée, `mulch record` / `mulch prime`) et **[Seeds](https://github.com/jayminwest/seeds)** (issues git-native, CLI `sd`) pour mémoire et suivi de tâches compatibles multi-agent. Mulch et Seeds sont **agnostiques** (pas limités à Claude) : Mulch supporte divers agents ; Seeds est un CLI appelable par tout processus.
 
 ## Structure du projet
 
@@ -11,7 +11,7 @@ ide-agentic/
 ├── .gitignore
 ├── docs/                     # Toute la documentation
 │   ├── README.md             # Index de la doc
-│   ├── config-litelmm-tailscale-aider.md   # Config proxy + Tailscale + Aider
+│   ├── config-litelmm-tailscale-aider.md   # Config proxy + Tailscale + pi/LLM
 │   ├── projet-roadmap.md     # Phases et objectifs du projet
 │   ├── exemples-commandes.md # Exemples de commandes $ (helper)
 │   ├── utilisation-autres-projets.md       # Utiliser le swarm sur un autre projet
@@ -21,21 +21,21 @@ ide-agentic/
 │       └── example-task-1.md
 ├── scripts/                  # Scripts swarm (Phase 2)
 │   ├── swarm-common.sh       # Fonctions partagées (swarm_task_md_content) — sourcé par dispatch, sling, handoff
-│   ├── swarm-check.sh        # Vérif prérequis (git, jq, sd, aider) — appelé par les autres scripts
+│   ├── swarm-check.sh        # Vérif prérequis (git, jq, sd, pi) — appelé par les autres scripts
 │   ├── swarm-quickstart.sh   # Premier run : check → sd init si besoin → 2 issues test → pipeline
 │   ├── swarm-setup.sh        # Créer N worktrees
-│   ├── swarm-run.sh          # Lancer Aider dans un worktree (+ mulch prime si présent)
+│   ├── swarm-run.sh          # Lancer pi dans un worktree (+ mulch prime si présent)
 │   ├── swarm-merge.sh        # Merger les branches (--completed = seulement issues fermées)
 │   ├── swarm-clean.sh        # Supprimer les worktrees (--merged-only)
 │   ├── swarm-seeds-create.sh # Seeds : créer des issues
 │   ├── swarm-dispatch.sh     # Phase 3 : dispatcher des issues → worktrees
-│   ├── swarm-sling.sh        # Phase 3 : une issue → un agent (worktree + Aider)
+│   ├── swarm-sling.sh        # Phase 3 : une issue → un agent (worktree + pi)
 │   ├── swarm-log.sh          # Phase 4 : écrire dans .swarm/logs/events.log
 │   ├── swarm-logs.sh         # Phase 4 : afficher / suivre les logs
 │   ├── swarm-watch.sh        # Phase 4 : watchdog (PIDs vivants, --relaunch)
 │   ├── swarm-dashboard.sh    # Phase 4 : tableau état agents (--watch)
 │   ├── swarm-costs.sh        # Phase 5 : sessions + rappel coûts LiteLLM
-│   ├── swarm-run-headless.sh # Phase 6 : Aider non interactif (TASK.md puis exit, sd close)
+│   ├── swarm-run-headless.sh # Phase 6 : pi non interactif (TASK.md via stdin puis exit, sd close)
 │   ├── swarm-pipeline.sh     # Phase 6 : dispatch → headless → merge (--test optionnel)
 │   ├── swarm-coordinate.sh   # Lot 2 : créer issues + lancer pipeline (--file tasks.txt)
 │   ├── swarm-rollback.sh     # Phase 6 : revert du dernier merge
@@ -66,9 +66,9 @@ ide-agentic/
 
 **Workspace / layout** : en **interactif** : 1 terminal à la racine (dispatch, merge, dashboard) + 1 terminal par agent (`swarm-run.sh agent-1`, `agent-2`, …). En **headless** : un seul terminal suffit — `swarm-pipeline.sh N` lance dispatch puis les agents en arrière-plan et fait le merge à la fin.
 
-1. **Config** : [docs/config-litelmm-tailscale-aider.md](docs/config-litelmm-tailscale-aider.md) — proxy LiteLLM sur Mac Mini, Tailscale, Aider sur MacBook.
+1. **Config** : [docs/config-litelmm-tailscale-aider.md](docs/config-litelmm-tailscale-aider.md) — proxy LiteLLM sur Mac Mini, Tailscale, pi sur MacBook.
 2. **Roadmap** : [docs/projet-roadmap.md](docs/projet-roadmap.md) — objectifs et phases (1 à 6).
-3. **Phase 2 (multi-agents)** : [docs/workflows/phase2-workflow.md](docs/workflows/phase2-workflow.md) — worktrees, lancer plusieurs Aider, merge manuel.
+3. **Phase 2 (multi-agents)** : [docs/workflows/phase2-workflow.md](docs/workflows/phase2-workflow.md) — worktrees, lancer plusieurs pi, merge manuel.
 4. **Phase 3 (orchestration)** : [docs/workflows/phase3-workflow.md](docs/workflows/phase3-workflow.md) — dispatch Seeds, sling, merge --completed, clean.
 5. **Phase 4 (monitoring)** : [docs/workflows/phase4-workflow.md](docs/workflows/phase4-workflow.md) — watchdog, logs, dashboard.
 6. **Phase 5 (évolution)** : [docs/workflows/phase5-workflow.md](docs/workflows/phase5-workflow.md) — IDE (Cursor/VS Code), autres clients, coûts ; tâches dans `.vscode/tasks.json`.
@@ -129,12 +129,12 @@ Détail : [docs/utilisation-autres-projets.md](docs/utilisation-autres-projets.m
 
 ## Dépannage
 
-Voir [docs/troubleshooting.md](docs/troubleshooting.md) : Aider ne répond pas (proxy), sd introuvable, aucune issue ouverte, conflit au merge, mail vide, commandes de diagnostic.
+Voir [docs/troubleshooting.md](docs/troubleshooting.md) : pi / LLM ne répond pas (proxy), sd introuvable, aucune issue ouverte, conflit au merge, mail vide, commandes de diagnostic.
 
 ---
 
 ## Prérequis
 
 - Git (dépôt initialisé avec au moins un commit pour Phase 2).
-- Aider installé, proxy LLM configuré (voir doc config). Pour swarm-prompt.sh : `LITELLM_API_BASE` (LiteLLM) ou `OPENROUTER_API_KEY` (OpenRouter).
+- pi installé (`npm install -g @mariozechner/pi-coding-agent`), proxy LLM configuré (voir doc config). Pour swarm-prompt.sh : `LITELLM_API_BASE` (LiteLLM) ou `OPENROUTER_API_KEY` (OpenRouter).
 - Optionnel : LiteLLM sur Mac Mini, Tailscale sur les deux machines ; **[Mulch](https://github.com/jayminwest/mulch)** (npm install -g mulch-cli) et **[Seeds](https://github.com/jayminwest/seeds)** (Bun, CLI `sd`) pour expertise et suivi d’issues — voir [docs/projet-roadmap.md](docs/projet-roadmap.md).

@@ -6,7 +6,7 @@ Procédure pour faire tourner le swarm piloté par [Seeds](https://github.com/ja
 
 ## Prérequis
 
-- Tout ce qui est nécessaire pour la [Phase 2](phase2-workflow.md) (git, Aider, proxy).
+- Tout ce qui est nécessaire pour la [Phase 2](phase2-workflow.md) (git, pi, proxy).
 - **Seeds** installé (CLI `sd`), dépôt initialisé (`sd init`) et `.seeds/` versionné (merge=union).
 - Optionnel : **Mulch** (déjà utilisé dans `swarm-run.sh` via `mulch prime`), **jq** pour le parsing JSON.
 
@@ -53,13 +53,13 @@ Tu lances ensuite un terminal par agent :
 
 ## 3. Sling une seule issue (un agent pour une tâche)
 
-Pour lancer un seul agent sur une issue donnée (création worktree + claim + Aider) :
+Pour lancer un seul agent sur une issue donnée (création worktree + claim + pi) :
 
 ```bash
 ./scripts/swarm-sling.sh seeds-a1b2 sonnet-4.6
 ```
 
-Le script crée un worktree dédié (ex. `agent-seedsa1b2`), remplit `TASK.md` et `.issue_id`, met l’issue en `in_progress`, puis lance `swarm-run.sh` (donc Aider avec `mulch prime` si présent).
+Le script crée un worktree dédié (ex. `agent-seedsa1b2`), remplit `TASK.md` et `.issue_id`, met l’issue en `in_progress`, puis lance `swarm-run.sh` (donc pi avec `mulch prime` si présent).
 
 ---
 
@@ -117,7 +117,7 @@ Lors du lancement d’un agent, tu peux préciser un rôle (rappel dans le conte
 ./scripts/swarm-run.sh agent-2 claude-sonnet builder
 ```
 
-`scout` affiche une ligne rappelant « Rôle: Scout (lecture seule) » pour que tu puisses le donner à Aider.
+`scout` affiche une ligne rappelant « Rôle: Scout (lecture seule) » pour que tu puisses le donner à pi.
 
 ---
 
@@ -137,4 +137,4 @@ Lors du lancement d’un agent, tu peux préciser un rôle (rappel dans le conte
 ## Différence Phase 2 / Phase 3
 
 - **Phase 2** : tu crées les worktrees à la main (`swarm-setup.sh`), tu écris les `TASK.md` toi-même, merge manuel de toutes les branches.
-- **Phase 3** : les tâches viennent de **Seeds** ; `swarm-dispatch.sh` crée les worktrees et assigne les issues ; `swarm-merge.sh --completed` ne merge que les branches dont l’issue est fermée ; `swarm-sling.sh` enchaîne une issue → un worktree → Aider ; `swarm-clean.sh` supprime les worktrees.
+- **Phase 3** : les tâches viennent de **Seeds** ; `swarm-dispatch.sh` crée les worktrees et assigne les issues ; `swarm-merge.sh --completed` ne merge que les branches dont l’issue est fermée ; `swarm-sling.sh` enchaîne une issue → un worktree → pi ; `swarm-clean.sh` supprime les worktrees.

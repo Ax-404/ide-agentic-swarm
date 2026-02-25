@@ -7,7 +7,7 @@ Objectif : rendre le swarm **autonome** — exécution non interactive des agent
 ## Prérequis
 
 - Phases 2 à 5 en place (worktrees, Seeds, dispatch, logs, IDE tasks).
-- **Aider** en mode scripting : `--message-file` et `--yes` (voir [Scripting Aider](https://aider.chat/docs/scripting.html)).
+- **pi** en mode non interactif : instruction via stdin (print mode), option `--print-turn` pour multi-turn outils (voir [pi.dev](https://pi.dev)).
 - **Seeds** (`sd`) pour les issues ; dépôt git avec `.seeds/` initialisé.
 
 ---
@@ -31,8 +31,8 @@ Exemple :
 ### Comportement
 
 1. Se place dans le worktree de l’agent (ex. `.swarm/agent-1/`).
-2. Si **`.mulch/`** est présent, exécute **`mulch prime`** et envoie à Aider ce contexte + **TASK.md** ; sinon envoie uniquement **TASK.md**. Lance **Aider** avec `--message-file <fichier> --yes .` puis exit.
-3. À la sortie d’Aider : ferme l’issue Seeds associée (`sd close`) si `.issue_id` est présent. **Succès (exit 0)** : ferme l'issue (`sd close`). **Échec (exit ≠ 0)** : réouvre l'issue (`sd update … --status open`) pour re-dispatch ; compteur `.retry_count` dans le worktree ; si `SWARM_MAX_RETRIES` est défini (ex. 3), au-delà l'issue n'est plus rouverte et alerte `retry_exhausted`.
+2. Si **`.mulch/`** est présent, exécute **`mulch prime`** et envoie à pi ce contexte + **TASK.md** ; sinon envoie uniquement **TASK.md**. Lance **pi** avec le message en stdin : `build_message | pi --model "$MODEL" --print-turn` puis exit.
+3. À la sortie de pi : ferme l’issue Seeds associée (`sd close`) si `.issue_id` est présent. **Succès (exit 0)** : ferme l'issue (`sd close`). **Échec (exit ≠ 0)** : réouvre l'issue (`sd update … --status open`) pour re-dispatch ; compteur `.retry_count` dans le worktree ; si `SWARM_MAX_RETRIES` est défini (ex. 3), au-delà l'issue n'est plus rouverte et alerte `retry_exhausted`.
 4. Enregistre les événements dans `.swarm/logs/events.log` (`agent_start_headless`, `agent_finish_headless`, `agent_reopen_on_fail`, `agent_retry_exhausted`).
 
 L’agent ne lit **que** `TASK.md` ; il n’y a pas de conversation. Idéal pour une boucle automatisée.
@@ -405,7 +405,7 @@ En plus des issues Seeds (open / in_progress / closed), une **couche mail** type
 
 ### Utilisation par un agent
 
-Depuis le worktree d’un agent (ou depuis Aider en lançant une commande shell), exécuter depuis la racine du dépôt :
+Depuis le worktree d’un agent (ou depuis pi en lançant une commande shell), exécuter depuis la racine du dépôt :
 
 ```bash
 ../../scripts/swarm-mail.sh send --to coordinator --type blocked --body "Je bloque sur le conflit dans src/auth.ts"

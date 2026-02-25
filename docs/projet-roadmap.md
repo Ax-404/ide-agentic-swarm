@@ -1,14 +1,14 @@
-# Projet : IDE agentique type swarm (Aider + couche Overstory-like)
+# Projet : IDE agentique type swarm (pi + couche Overstory-like)
 
-Ce document décrit ce que l’on va faire pour le projet : un système agentique multi-agents (swarm) basé sur Aider et une couche d’orchestration inspirée d’Overstory, utilisable en terminal (et plus tard éventuellement dans un IDE), avec des modèles ouverts (Kimi K2, GLM-5, MiniMax 2.5, etc.) via un proxy LiteLLM.
+Ce document décrit ce que l’on va faire pour le projet : un système agentique multi-agents (swarm) basé sur pi et une couche d’orchestration inspirée d’Overstory, utilisable en terminal (et plus tard éventuellement dans un IDE), avec des modèles ouverts (Kimi K2, GLM-5, MiniMax 2.5, etc.) via un proxy LiteLLM.
 
 ---
 
 ## 1. Objectifs
 
 - **Multi-LLM** : utiliser n’importe quel modèle (Kimi K2, GLM-5, MiniMax 2.5, OpenAI, Anthropic, etc.) via un proxy LiteLLM hébergé sur un Mac Mini M2.
-- **Accès depuis le MacBook M1** : Aider (et les futurs agents) pointent vers le proxy via Tailscale.
-- **Swarm** : plusieurs agents (Aider) qui travaillent en parallèle sur des tâches décomposées, avec coordination (type Overstory) et merge des résultats.
+- **Accès depuis le MacBook M1** : pi (et les futurs agents) pointent vers le proxy via Tailscale.
+- **Swarm** : plusieurs agents (pi) qui travaillent en parallèle sur des tâches décomposées, avec coordination (type Overstory) et merge des résultats.
 - **Usage terminal** en priorité ; extension IDE (VS Code / Cursor) possible plus tard.
 
 ---
@@ -19,7 +19,7 @@ Ce document décrit ce que l’on va faire pour le projet : un système agentiqu
 |-----------|--------|------|
 | **Proxy LLM** | LiteLLM (Mac Mini M2) | Un seul endpoint, multi-providers, clés centralisées. |
 | **Réseau** | Tailscale | Accès au proxy depuis le MacBook (et ailleurs) sans ouvrir de ports. |
-| **Agent de base** | Aider | Agent coding en terminal, multi-LLM via LiteLLM/OpenRouter. |
+| **Agent de base** | pi | Agent coding en terminal, multi-LLM via LiteLLM/OpenRouter. |
 | **Orchestration** | Couche “Overstory-like” (à construire) | Worktrees, coordination, mail/queue, merge. |
 | **Expertise / mémoire** | [Mulch](https://github.com/jayminwest/mulch) | Fichiers d’expertise (`.mulch/`, JSONL) : `mulch record` / `mulch query` / `mulch prime` ; cumul entre sessions et entre agents, merge=union. |
 | **Suivi de tâches** | [Seeds](https://github.com/jayminwest/seeds) | Tracker d’issues git-native (`.seeds/`, JSONL), CLI `sd` : créer issues, `sd ready`, claim/close ; compatible multi-worktree (merge=union). |
@@ -28,7 +28,7 @@ Ce document décrit ce que l’on va faire pour le projet : un système agentiqu
 
 ## 2bis. Avis sur Mulch et Seeds
 
-**Ils ne sont pas réservés à Claude.** Mulch et Seeds sont conçus pour **tout agent** : Mulch indique *"work with any agent"* et *"Provider-agnostic — Any agent with bash access can call the CLI"*, et `mulch setup [provider]` propose **claude, cursor, codex, gemini, windsurf, aider** (Aider est donc supporté). Seeds est un simple CLI `sd` sans dépendance à un agent ; Overstory l’utilise mais n’importe quel processus peut appeler `sd`.
+**Ils ne sont pas réservés à Claude.** Mulch et Seeds sont conçus pour **tout agent** : Mulch indique *"work with any agent"* et *"Provider-agnostic — Any agent with bash access can call the CLI"*, et `mulch setup [provider]` propose **claude, cursor, codex, gemini, windsurf, aider** (Aider reste une option ; pi est le défaut). Seeds est un simple CLI `sd` sans dépendance à un agent ; Overstory l’utilise mais n’importe quel processus peut appeler `sd`.
 
 **Mulch** ([github.com/jayminwest/mulch](https://github.com/jayminwest/mulch)) : *“Growing Expertise for Coding Agents”* — couche passive (pas de LLM) : les agents appellent `mulch record` pour écrire des apprentissages (conventions, échecs, décisions, patterns) et `mulch query` / `mulch prime` pour les relire. Tout vit dans `.mulch/` (JSONL par domaine), versionné en git. Conçu pour le multi-agent (verrous, écritures atomiques, `merge=union` dans git). **Intérêt pour nous** : chaque agent (ou le coordinateur) peut enregistrer ce qu’il a appris ; au merge des branches, l’expertise se combine ; en début de session ou avant dispatch, `mulch prime` donne le contexte au modèle. À intégrer dès la Phase 2 (optionnel) et systématiquement en Phase 3.
 
@@ -38,12 +38,12 @@ Ce document décrit ce que l’on va faire pour le projet : un système agentiqu
 
 ## 3. Phases du projet
 
-### Phase 1 — Proxy + Aider (priorité immédiate)
+### Phase 1 — Proxy + pi (priorité immédiate)
 
 - [ ] Héberger le proxy LiteLLM sur le Mac Mini M2 (voir [config-litelmm-tailscale-aider.md](config-litelmm-tailscale-aider.md)).
 - [ ] Configurer Tailscale sur Mac Mini et MacBook ; vérifier la connectivité.
-- [ ] Configurer Aider sur le MacBook pour utiliser l’URL du proxy (Tailscale du Mac Mini). Pour swarm-prompt.sh : LITELLM_API_BASE.
-- [ ] Tester plusieurs modèles (OpenAI, Anthropic, Kimi, GLM, MiniMax selon config) via Aider.
+- [ ] Configurer pi sur le MacBook pour utiliser l’URL du proxy (Tailscale du Mac Mini). Pour swarm-prompt.sh : LITELLM_API_BASE.
+- [ ] Tester plusieurs modèles (OpenAI, Anthropic, Kimi, GLM, MiniMax selon config) via pi.
 - [ ] Valider latence et stabilité (depuis le LAN et depuis l’extérieur via Tailscale).
 
 **Livrable** : un flux MacBook → Tailscale → Mac Mini (LiteLLM) → APIs LLM fonctionnel et documenté.
@@ -53,14 +53,14 @@ Ce document décrit ce que l’on va faire pour le projet : un système agentiqu
 ### Phase 2 — Multi-agents “manuels” (sans orchestration)
 
 - [x] Définir un workflow simple : 1 coordinateur (toi ou un script) qui découpe une tâche en N sous-tâches.
-- [x] Lancer N processus Aider (ou N terminaux) dans N répertoires ou worktrees git distincts (un par sous-tâche).
-- [x] Chaque instance Aider pointe vers le même proxy (Mac Mini) ; possibilité d’attribuer des modèles différents par rôle (ex. Scout = Kimi, Builder = MiniMax).
+- [x] Lancer N processus pi (ou N terminaux) dans N répertoires ou worktrees git distincts (un par sous-tâche).
+- [x] Chaque instance pi pointe vers le même proxy (Mac Mini) ; possibilité d’attribuer des modèles différents par rôle (ex. Scout = Kimi, Builder = MiniMax).
 - [x] Merge manuel des branches / répertoires une fois les sous-tâches terminées.
 - [x] Documenter le pattern (worktrees, commandes, exemples de découpage).
 - [x] **(Optionnel)** Introduire **Seeds** : `sd init` dans le projet, créer une issue par sous-tâche (`sd create --title "..."`), assigner manuellement chaque issue à un worktree ; à la fin `sd close` dans chaque agent et merger (`.seeds/` merge=union). Script `scripts/swarm-seeds-create.sh` + doc section 8 dans [workflows/phase2-workflow.md](workflows/phase2-workflow.md).
 - [x] **(Optionnel)** Introduire **Mulch** : `mulch init` + `mulch add <domaine>` ; dans chaque agent, en fin de session faire `mulch record` pour les apprentissages ; au merge des branches, l’expertise se cumule ; en début de session `mulch prime` injecté automatiquement par `swarm-run.sh`. Doc section 9 dans [workflows/phase2-workflow.md](workflows/phase2-workflow.md).
 
-**Livrable** : procédure reproductible pour faire travailler plusieurs Aider en parallèle avec merge manuel.
+**Livrable** : procédure reproductible pour faire travailler plusieurs pi en parallèle avec merge manuel.
 
 **Implémenté** : scripts `scripts/swarm-setup.sh`, `scripts/swarm-run.sh`, `scripts/swarm-merge.sh`, `scripts/swarm-seeds-create.sh` ; template `templates/TASK.md` ; intégration optionnelle Seeds (issues par sous-tâche) et Mulch (`mulch prime` dans swarm-run, `mulch record` en fin de session) ; workflow détaillé dans [workflows/phase2-workflow.md](workflows/phase2-workflow.md).
 
@@ -76,13 +76,13 @@ Ce document décrit ce que l’on va faire pour le projet : un système agentiqu
 - [x] **Merge** : `swarm-merge.sh` avec option `--completed` (ne merge que les branches dont l’issue est closed) ; conflits à résoudre à la main.
 - [x] **CLI / scripts** : `swarm-dispatch.sh [N]`, `swarm-sling.sh <issue-id> [model]`, `swarm-merge.sh [--completed|--all]`, `swarm-clean.sh [--merged-only] [--force]`.
 
-**Livrable** : couche “Overstory-like” minimaliste (scripts + worktrees + Seeds + Mulch) utilisable avec Aider. Doc : [workflows/phase3-workflow.md](workflows/phase3-workflow.md).
+**Livrable** : couche “Overstory-like” minimaliste (scripts + worktrees + Seeds + Mulch) utilisable avec pi. Doc : [workflows/phase3-workflow.md](workflows/phase3-workflow.md).
 
 ---
 
 ### Phase 4 — Robustesse et monitoring (optionnel)
 
-- [x] **Watchdog léger** : `swarm-watch.sh` vérifie les PIDs dans `.swarm/agent-*/.pid` ; option `--once`, `--interval`, `--relaunch` pour relancer un agent mort. Les PIDs sont enregistrés par `swarm-run.sh` au démarrage d’Aider.
+- [x] **Watchdog léger** : `swarm-watch.sh` vérifie les PIDs dans `.swarm/agent-*/.pid` ; option `--once`, `--interval`, `--relaunch` pour relancer un agent mort. Les PIDs sont enregistrés par `swarm-run.sh` au démarrage de pi.
 - [x] **Logs centralisés** : `.swarm/logs/events.log` (append) ; `swarm-log.sh` pour écrire, `swarm-logs.sh` pour afficher / suivre. Les scripts swarm (run, dispatch, merge, sling, watch) enregistrent les événements.
 - [x] **Dashboard minimal** : `swarm-dashboard.sh` affiche un tableau (agent, issue, statut Seeds, PID, actif) + dernières lignes du log ; option `--watch` pour rafraîchissement périodique.
 
@@ -102,7 +102,7 @@ Ce document décrit ce que l’on va faire pour le projet : un système agentiqu
 
 Objectif : rendre le swarm **autonome** — déclenchement sans humain, exécution non interactive, merge conditionnel aux tests, et garde-fous (staging, rollback).
 
-- [x] **Agent non interactif** : script `swarm-run-headless.sh` qui lance Aider en mode *scripting* (`--message-file TASK.md --yes`) dans le worktree de l’agent, attend la fin (exit code), ferme l’issue Seeds (`sd close`) et écrit dans les logs. Référence : [Scripting Aider](https://aider.chat/docs/scripting.html).
+- [x] **Agent non interactif** : script `swarm-run-headless.sh` qui lance pi en mode non interactif (message via stdin, `--print-turn`), attend la fin (exit code), ferme l’issue Seeds (`sd close`) et écrit dans les logs. Référence : [pi.dev](https://pi.dev).
 - [x] **Boucle automatique** :
   - **Trigger** : cron, webhook ou queue (exemples dans [workflows/phase6-workflow.md](workflows/phase6-workflow.md)).
   - **Dispatch** : réutilisation de `swarm-dispatch.sh`.
@@ -131,7 +131,7 @@ Objectif : rendre le swarm **autonome** — déclenchement sans humain, exécuti
 - **Overstory** : [github.com/jayminwest/overstory](https://github.com/jayminwest/overstory) — inspiration pour worktrees, mail, merge, rôles.
 - **Mulch** : [github.com/jayminwest/mulch](https://github.com/jayminwest/mulch) — expertise structurée pour agents (record/query/prime), git-native, multi-agent safe.
 - **Seeds** : [github.com/jayminwest/seeds](https://github.com/jayminwest/seeds) — tracker d’issues git-native pour workflows agents (CLI `sd`), remplace beads dans l’écosystème Overstory.
-- **Aider** : [aider.chat](https://aider.chat) — agent coding, support multi-LLM / OpenAI-compatible.
+- **pi** : [pi.dev](https://pi.dev) — agent coding, support multi-LLM / OpenAI-compatible.
 - **LiteLLM** : [docs.litellm.ai](https://docs.litellm.ai) — proxy et lib pour multi-providers.
 - **Configuration détaillée** : voir [config-litelmm-tailscale-aider.md](config-litelmm-tailscale-aider.md) dans ce dépôt.
 
@@ -141,7 +141,7 @@ Objectif : rendre le swarm **autonome** — déclenchement sans humain, exécuti
 
 - **Swarm** : taux d’erreur et coût peuvent augmenter avec le nombre d’agents ; bien découper les tâches et limiter le parallélisme au début.
 - **Merge** : les conflits peuvent être fréquents ; prévoir une stratégie (merge par fichier, résolution manuelle, ou outil dédié).
-- **Dépendance au proxy** : si le Mac Mini est éteint, prévoir un fallback (Aider en direct vers OpenRouter ou une API) pour continuer à coder en solo.
+- **Dépendance au proxy** : si le Mac Mini est éteint, prévoir un fallback (pi en direct vers OpenRouter ou une API) pour continuer à coder en solo.
 
 ---
 

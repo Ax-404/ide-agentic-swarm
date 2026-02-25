@@ -1,6 +1,6 @@
 # Utiliser ide-agentic sur un autre projet
 
-Pour que le swarm (Aider, Seeds, Mulch, worktrees) **agisse directement sur la construction d’un autre projet**, il faut que les scripts tournent **depuis la racine de ce projet**. Deux façons concrètes de faire.
+Pour que le swarm (pi, Seeds, Mulch, worktrees) **agisse directement sur la construction d’un autre projet**, il faut que les scripts tournent **depuis la racine de ce projet**. Deux façons concrètes de faire.
 
 ---
 
@@ -44,7 +44,7 @@ Les scripts (`swarm-*.sh`) prennent leur **répertoire de travail** comme étant
    # etc.
    ```
 
-Tout se passe **dans** `mon-autre-projet` : `.swarm/`, `.seeds/`, `.mulch/` y sont créés, les worktrees sont des branches de ce dépôt, et Aider travaille sur le code de ce projet.
+Tout se passe **dans** `mon-autre-projet` : `.swarm/`, `.seeds/`, `.mulch/` y sont créés, les worktrees sont des branches de ce dépôt, et pi travaille sur le code de ce projet.
 
 **En résumé** : tu mets une copie des scripts (et de la config/doc) dans chaque projet où tu veux le swarm ; ce dossier agit alors directement sur la construction de ce projet, car tu exécutes les commandes depuis sa racine.
 

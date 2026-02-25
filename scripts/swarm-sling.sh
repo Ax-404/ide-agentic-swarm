@@ -84,6 +84,6 @@ swarm_task_md_content "$ISSUE_ID" "$title_for_task" "$desc" > "${dir}/TASK.md"
 echo "$ISSUE_ID" > "${dir}/.issue_id"
 sd update "$ISSUE_ID" --status in_progress
 [ -x "${REPO_ROOT}/scripts/swarm-log.sh" ] && "${REPO_ROOT}/scripts/swarm-log.sh" sling "$ISSUE_ID" "$name" "$MODEL"
-echo "Issue $ISSUE_ID → $name ($ROLE, in_progress). Lancement Aider..."
+echo "Issue $ISSUE_ID → $name ($ROLE, in_progress). Lancement pi..."
 echo ""
 exec "${REPO_ROOT}/scripts/swarm-run.sh" "$name" "$MODEL" "$ROLE"

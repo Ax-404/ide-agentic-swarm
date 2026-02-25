@@ -3,7 +3,7 @@
 # Usage: ./scripts/swarm-quickstart.sh [--yes]
 #   Sans option : vérifie les prérequis, propose de créer 2 issues de test et de lancer le pipeline.
 #   --yes : crée 2 issues de test et lance le pipeline sans demander.
-# Prérequis: git, sd (Seeds), aider. Le script fait sd init si .seeds/ est absent.
+# Prérequis: git, sd (Seeds), pi. Le script fait sd init si .seeds/ est absent.
 
 set -e
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -41,9 +41,9 @@ if [ ! -d ".seeds" ]; then
   echo ""
 fi
 
-# 4 — aider : requis pour le pipeline
-if ! command -v aider >/dev/null 2>&1; then
-  echo "Erreur: aider introuvable. Install: pip install aider-chat (ou équivalent)."
+# 4 — pi : requis pour le pipeline
+if ! command -v pi >/dev/null 2>&1; then
+  echo "Erreur: pi introuvable. Install: npm install -g @mariozechner/pi-coding-agent"
   exit 1
 fi
 

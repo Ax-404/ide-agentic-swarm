@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Vérification des prérequis swarm : git, jq, sd (Seeds), aider, mulch (optionnel).
-# Usage: ./scripts/swarm-check.sh [--require seeds] [--require sd] [--require jq] [--require aider] [--quiet]
+# Vérification des prérequis swarm : git, jq, sd (Seeds), pi (coding agent), mulch (optionnel).
+# Usage: ./scripts/swarm-check.sh [--require seeds] [--require sd] [--require jq] [--require pi] [--quiet]
 #   --require seeds  exige sd et .seeds/ (pour dispatch, pipeline, coordinate, sling)
 #   --require sd     exige uniquement le binaire sd (pour seeds-create avant sd init)
 #   --require jq     exige jq (pour mail, prompt, merge/dashboard qui lisent JSONL)
-#   --require aider  exige aider en PATH (pour run, run-headless)
+#   --require pi     exige pi (coding agent) en PATH (pour run, run-headless)
 #   --quiet          pas d'affichage, seulement code de sortie
 # Sans option : vérifie uniquement git (dépôt valide). Exit 0 si tout OK, 1 si un prérequis --require manque.
 
@@ -13,7 +13,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REQUIRE_SEEDS=""
 REQUIRE_SD=""
 REQUIRE_JQ=""
-REQUIRE_AIDER=""
+REQUIRE_PI=""
 QUIET=""
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -22,15 +22,16 @@ while [ $# -gt 0 ]; do
         seeds)  REQUIRE_SEEDS=1 ;;
         sd)     REQUIRE_SD=1 ;;
         jq)     REQUIRE_JQ=1 ;;
-        aider)   REQUIRE_AIDER=1 ;;
-        *)      echo "Erreur: --require exige seeds|sd|jq|aider"; exit 1 ;;
+        pi)      REQUIRE_PI=1 ;;
+        *)       echo "Erreur: --require exige seeds|sd|jq|pi"; exit 1 ;;
       esac
       shift 2
       ;;
     --quiet) QUIET=1; shift ;;
     -h|--help)
-      echo "Usage: $0 [--require seeds|sd|jq|aider] [--quiet]"
+      echo "Usage: $0 [--require seeds|sd|jq|pi] [--quiet]"
       echo "  Vérifie les prérequis. Avec --require, sort en erreur si manquant."
+      echo "  pi = coding agent (npm install -g @mariozechner/pi-coding-agent)"
       exit 0
       ;;
     *) shift ;;
@@ -43,7 +44,7 @@ err() { echo "$@" >&2; }
 
 # Avec un seul --require, n'afficher que les erreurs (pas le récap informatif)
 REQUIRE_ANY=""
-[ -n "$REQUIRE_SEEDS" ] || [ -n "$REQUIRE_SD" ] || [ -n "$REQUIRE_JQ" ] || [ -n "$REQUIRE_AIDER" ] && REQUIRE_ANY=1
+[ -n "$REQUIRE_SEEDS" ] || [ -n "$REQUIRE_SD" ] || [ -n "$REQUIRE_JQ" ] || [ -n "$REQUIRE_PI" ] && REQUIRE_ANY=1
 
 # Toujours : dépôt git
 if ! git -C "$REPO_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -86,13 +87,13 @@ if [ -n "$REQUIRE_SD" ]; then
   fi
 fi
 
-# Aider — informatif seulement si aucun --require
+# Pi (coding agent) — informatif seulement si aucun --require
 if [ -z "$QUIET" ] && [ -z "$REQUIRE_ANY" ]; then
-  command -v aider >/dev/null 2>&1 && msg "  aider    : OK" || msg "  aider    : absent (requis pour swarm-run, swarm-run-headless)"
+  command -v pi >/dev/null 2>&1 && msg "  pi       : OK" || msg "  pi       : absent (requis pour swarm-run, swarm-run-headless)"
 fi
-if [ -n "$REQUIRE_AIDER" ]; then
-  if ! command -v aider >/dev/null 2>&1; then
-    err "Erreur: aider introuvable. Install: pip install aider-chat (ou équivalent)."
+if [ -n "$REQUIRE_PI" ]; then
+  if ! command -v pi >/dev/null 2>&1; then
+    err "Erreur: pi introuvable. Install: npm install -g @mariozechner/pi-coding-agent"
     FAIL=1
   fi
 fi

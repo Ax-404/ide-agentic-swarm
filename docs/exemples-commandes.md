@@ -8,16 +8,16 @@ Commandes à lancer **depuis la racine du projet** (après `cd mon-projet` ou ap
 
 | Entrée | Prérequis | Script à lancer |
 |--------|-----------|-----------------|
-| **Premier run** (tout valider en une fois) | git, sd, aider | `./scripts/swarm-quickstart.sh` ou `./scripts/swarm-quickstart.sh --yes` |
-| **Manuelle** (sans Seeds) : worktrees + TASK à la main | git, aider | `swarm-setup.sh N` → éditer TASK.md → `swarm-run.sh agent-X` → `swarm-merge.sh` |
-| **Manuelle avec Seeds** : issues déjà créées | git, sd, .seeds/, aider | `swarm-dispatch.sh N` → `swarm-run.sh agent-X` ou `swarm-pipeline.sh N` |
-| **Liste de tâches** (titres → issues + pipeline) | git, sd, aider, (jq pour merge/dashboard) | `swarm-coordinate.sh "T1" "T2"` ou `--file tasks.txt` + options |
-| **Prompt naturel** (phrase → LLM → sous-tâches → pipeline) | git, sd, aider, **LITELLM_API_BASE** ou **OPENROUTER_API_KEY**, jq, curl | `swarm-prompt.sh "Ta demande"` + options |
-| **Une issue précise** | git, sd, .seeds/, aider | `swarm-sling.sh <issue-id> [model]` |
-| **Diagnostic prérequis** | — | `./scripts/swarm-check.sh` ou `--require seeds|jq|aider` |
+| **Premier run** (tout valider en une fois) | git, sd, pi | `./scripts/swarm-quickstart.sh` ou `./scripts/swarm-quickstart.sh --yes` |
+| **Manuelle** (sans Seeds) : worktrees + TASK à la main | git, pi | `swarm-setup.sh N` → éditer TASK.md → `swarm-run.sh agent-X` → `swarm-merge.sh` |
+| **Manuelle avec Seeds** : issues déjà créées | git, sd, .seeds/, pi | `swarm-dispatch.sh N` → `swarm-run.sh agent-X` ou `swarm-pipeline.sh N` |
+| **Liste de tâches** (titres → issues + pipeline) | git, sd, pi, (jq pour merge/dashboard) | `swarm-coordinate.sh "T1" "T2"` ou `--file tasks.txt` + options |
+| **Prompt naturel** (phrase → LLM → sous-tâches → pipeline) | git, sd, pi, **LITELLM_API_BASE** ou **OPENROUTER_API_KEY**, jq, curl | `swarm-prompt.sh "Ta demande"` + options |
+| **Une issue précise** | git, sd, .seeds/, pi | `swarm-sling.sh <issue-id> [model]` |
+| **Diagnostic prérequis** | — | `./scripts/swarm-check.sh` ou `--require seeds|jq|pi` |
 | **Handoff agent → agent** (appliquer les handoffs mail) | git, sd, jq, .seeds/, mail | `swarm-handoff.sh` ou `swarm-handoff.sh list` |
 
-**Prérequis détaillés :** Seeds = `sd` + répertoire `.seeds/` (sinon `sd init`). Mulch = optionnel (expertise). jq = recommandé pour mail, prompt, lecture JSONL. Pour `swarm-prompt.sh` : **LITELLM_API_BASE** (proxy LiteLLM) ou **OPENROUTER_API_KEY** (OpenRouter) — voir section « Variables LLM » ci-dessous. Aider : configurer le proxy selon sa doc.
+**Prérequis détaillés :** Seeds = `sd` + répertoire `.seeds/` (sinon `sd init`). Mulch = optionnel (expertise). jq = recommandé pour mail, prompt, lecture JSONL. Pour `swarm-prompt.sh` : **LITELLM_API_BASE** (proxy LiteLLM) ou **OPENROUTER_API_KEY** (OpenRouter) — voir section « Variables LLM » ci-dessous. pi : `npm install -g @mariozechner/pi-coding-agent` ; configurer le proxy selon sa doc.
 
 ---
 
@@ -27,7 +27,7 @@ Commandes à lancer **depuis la racine du projet** (après `cd mon-projet` ou ap
 # Créer 2 worktrees
 ./scripts/swarm-setup.sh 2
 
-# Éditer les tâches dans .swarm/agent-1/TASK.md et .swarm/agent-2/TASK.md puis lancer Aider en interactif
+# Éditer les tâches dans .swarm/agent-1/TASK.md et .swarm/agent-2/TASK.md puis lancer pi en interactif
 ./scripts/swarm-run.sh agent-1 sonnet-4.6
 # Dans un 2e terminal :
 ./scripts/swarm-run.sh agent-2 sonnet-4.6
@@ -158,7 +158,7 @@ SWARM_BUDGET_MAX=10.00 ./scripts/swarm-budget.sh
 ## Une issue précise (sling)
 
 ```bash
-# Assigner une issue Seeds à un worktree dédié et lancer Aider
+# Assigner une issue Seeds à un worktree dédié et lancer pi
 ./scripts/swarm-sling.sh seeds-abc123 sonnet-4.6
 ```
 
@@ -226,13 +226,13 @@ Après qu’un agent a envoyé un message handoff (ex. `--to agent-2 --type hand
 | Script | Rôle |
 |--------|------|
 | `swarm-common.sh` | **Sourcé** par dispatch, sling, handoff : fonction `swarm_task_md_content` (génération TASK.md). |
-| `swarm-check.sh [--require seeds\|jq\|aider]` | Vérifie les prérequis (git, sd, jq, aider). |
+| `swarm-check.sh [--require seeds\|jq\|pi]` | Vérifie les prérequis (git, sd, jq, pi). |
 | `swarm-quickstart.sh [--yes]` | Premier run : check → sd init si besoin → 2 issues test → pipeline. |
 | `swarm-setup.sh [N]` | Crée N worktrees (sans Seeds). |
 | `swarm-seeds-create.sh "T1" "T2"` | Crée les issues Seeds. |
 | `swarm-dispatch.sh [N]` | Assigne N issues open → worktrees + TASK.md. |
-| `swarm-run.sh agent-X [model] [scout\|builder]` | Aider interactif (+ mulch prime). Rôle `scout` = rappel lecture seule ; `builder` = défaut. Voir [ROLES.md](ROLES.md). |
-| `swarm-run-headless.sh agent-X [model]` | Aider non interactif (TASK.md, close/reopen issue). |
+| `swarm-run.sh agent-X [model] [scout\|builder]` | pi interactif (+ mulch prime). Rôle `scout` = rappel lecture seule ; `builder` = défaut. Voir [ROLES.md](ROLES.md). |
+| `swarm-run-headless.sh agent-X [model]` | pi non interactif (TASK.md via stdin, close/reopen issue). |
 | `swarm-pipeline.sh [N] [--test "cmd"] ...` | Dispatch → headless → merge (→ validate). |
 | `swarm-coordinate.sh "T1" "T2" [options]` | Crée issues + pipeline. |
 | `swarm-prompt.sh "demande" [options]` | LLM → sous-tâches → coordinateur (LITELLM_API_BASE ou OPENROUTER_API_KEY). |

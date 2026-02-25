@@ -1,6 +1,6 @@
 # Phase 5 — Évolution (IDE, autres clients, coûts)
 
-Intégration dans l’IDE, utilisation d’autres clients que Aider avec le même proxy, et suivi des coûts / tokens.
+Intégration dans l’IDE, utilisation d’autres clients que pi avec le même proxy, et suivi des coûts / tokens.
 
 ---
 
@@ -33,7 +33,7 @@ Le répertoire de travail du terminal doit être la **racine du projet** (où se
 
 ---
 
-## 2. Autres clients que Aider (API OpenAI-compatible)
+## 2. Autres clients que pi (API OpenAI-compatible)
 
 Tout client qui peut envoyer des requêtes **Chat Completions** vers une URL personnalisée peut utiliser le proxy.
 
@@ -58,7 +58,7 @@ curl -X POST "http://macmini.ton-tailnet.ts.net:4000/chat/completions" \
 - **CLI** : tout outil qui permet de définir l’URL du proxy (ex. `LITELLM_API_BASE` ou `OPENROUTER_API_KEY`) et un `model` : configurer l’URL du proxy et le nom de modèle.
 - **Scripts (Python, Node, etc.)** : utiliser le SDK OpenAI en pointant `openai.api_base` (ou équivalent) vers l’URL du proxy ; le reste du code reste identique.
 
-Aider n’est qu’un client possible ; la logique d’orchestration (worktrees, Seeds, scripts swarm) reste utilisable avec d’autres clients tant qu’ils travaillent dans le même dépôt et peuvent lancer des commandes (terminal, scripts) pour dispatch, merge, etc.
+pi n’est qu’un client possible ; la logique d’orchestration (worktrees, Seeds, scripts swarm) reste utilisable avec d’autres clients tant qu’ils travaillent dans le même dépôt et peuvent lancer des commandes (terminal, scripts) pour dispatch, merge, etc.
 
 ---
 

@@ -1,6 +1,9 @@
 # Phase 2 — worktrees des agents (gérés par git worktree)
 .swarm/
 
+# Clone temporaire pi-mono (vérification compatibilité swarm)
+.pi-mono-temp/
+
 # Env / secrets
 .env
 .env.local

@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# Phase 6 — Lance Aider en mode non interactif (scripting) dans le worktree d'un agent.
+# Phase 6 — Lance pi (coding agent) en mode non interactif (stdin → print mode) dans le worktree d'un agent.
 # Rôle(s): Builder (défaut) ou Scout si .role=scout (rappel lecture seule injecté). Voir docs/ROLES.md.
 # Exécute la tâche décrite dans TASK.md puis s'arrête. À la sortie : fermeture issue Seeds, logs.
 # Usage: ./scripts/swarm-run-headless.sh <agent-name> [model]
 # Exemple: ./scripts/swarm-run-headless.sh agent-1 sonnet-4.6
-# Référence: https://aider.chat/docs/scripting.html
+# Référence: https://pi.dev (pi -p / stdin = print mode, exit après réponse)
 
 set -e
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SWARM_DIR="${REPO_ROOT}/.swarm"
 
-# Afficher l'aide sans exiger aider
+# Afficher l'aide sans exiger pi
 [ "$1" = "-h" ] || [ "$1" = "--help" ] && {
   echo "Usage: $0 <agent-name> [model]"
   echo "Exemple: $0 agent-1 sonnet-4.6"
@@ -21,7 +21,7 @@ AGENT_NAME="${1:?Usage: $0 <agent-name> [model]}"
 MODEL="${2:-sonnet-4.6}"
 AGENT_DIR="${SWARM_DIR}/${AGENT_NAME}"
 
-"${REPO_ROOT}/scripts/swarm-check.sh" --require aider --quiet || exit 1
+"${REPO_ROOT}/scripts/swarm-check.sh" --require pi --quiet || exit 1
 
 if [ ! -d "$AGENT_DIR" ]; then
   echo "Erreur: $AGENT_DIR introuvable. Lance d'abord swarm-dispatch.sh ou swarm-setup.sh."
@@ -47,9 +47,7 @@ case "$ROLE" in
   *) ROLE="builder" ;;
 esac
 
-# Contexte Mulch optionnel + rappel de rôle : construire le message envoyé à Aider
-MESSAGE_FILE="TASK.md"
-TEMP_MSG=""
+# Message pour pi : rappel de rôle + Mulch (optionnel) + TASK.md — envoyé via stdin (print mode)
 build_message() {
   case "$ROLE" in
     scout)
@@ -81,28 +79,19 @@ build_message() {
 }
 MULCH_CMD=""
 command -v mulch >/dev/null 2>&1 && MULCH_CMD="mulch" || command -v npx >/dev/null 2>&1 && MULCH_CMD="npx -y mulch-cli"
-NEED_BUILD=0
-[ "$ROLE" = "scout" ] || [ "$ROLE" = "reviewer" ] || [ "$ROLE" = "documenter" ] || [ "$ROLE" = "red-team" ] && NEED_BUILD=1
-[ -d ".mulch" ] && [ -n "$MULCH_CMD" ] && NEED_BUILD=1
-if [ "$NEED_BUILD" -eq 1 ]; then
-  TEMP_MSG="${AGENT_DIR}/.message_headless.$$"
-  build_message > "$TEMP_MSG"
-  MESSAGE_FILE=".message_headless.$$"
-  trap 'rm -f "$AGENT_DIR/.message_headless.$$"' EXIT
-fi
 
 # PID pour le watchdog (optionnel en headless)
 echo $$ > .pid 2>/dev/null || true
 
-# Lancer Aider en mode scripting : une instruction (fichier), pas de chat, puis exit
-AIDER_EXIT=0
-aider --model "$MODEL" --message-file "$MESSAGE_FILE" --yes . || AIDER_EXIT=$?
+# Lancer pi en mode print : stdin = instruction, exit après réponse (--print-turn = multi-turn outils)
+PI_EXIT=0
+build_message | pi --model "$MODEL" --print-turn || PI_EXIT=$?
 
 # Auto-correction : en cas d'échec, réouvrir l'issue pour re-dispatch (avec plafond optionnel)
 # En cas de succès : fermer l'issue ; en cas d'échec : réouvrir sauf si MAX_RETRIES atteint
 if [ -f ".issue_id" ] && command -v sd >/dev/null 2>&1 && [ -d "${REPO_ROOT}/.seeds" ]; then
   issue_id=$(cat .issue_id)
-  if [ "$AIDER_EXIT" -eq 0 ]; then
+  if [ "$PI_EXIT" -eq 0 ]; then
     reason="Headless terminé (exit 0)"
     (cd "$REPO_ROOT" && sd close "$issue_id" --reason "$reason") 2>/dev/null || true
     # Réinitialiser le compteur de retry en cas de succès
@@ -128,6 +117,6 @@ if [ -f ".issue_id" ] && command -v sd >/dev/null 2>&1 && [ -d "${REPO_ROOT}/.se
 fi
 
 # Log fin
-[ -x "${REPO_ROOT}/scripts/swarm-log.sh" ] && "${REPO_ROOT}/scripts/swarm-log.sh" agent_finish_headless "$AGENT_NAME" "$AIDER_EXIT"
+[ -x "${REPO_ROOT}/scripts/swarm-log.sh" ] && "${REPO_ROOT}/scripts/swarm-log.sh" agent_finish_headless "$AGENT_NAME" "$PI_EXIT"
 
-exit "$AIDER_EXIT"
+exit "$PI_EXIT"

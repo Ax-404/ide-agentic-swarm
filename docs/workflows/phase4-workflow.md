@@ -7,7 +7,7 @@ Watchdog, logs centralisés et dashboard minimal pour surveiller les agents et t
 ## Prérequis
 
 - Phase 2/3 en place (worktrees, Seeds, scripts swarm-*).
-- `swarm-run.sh` enregistre le PID du processus Aider dans `.swarm/agent-X/.pid` au démarrage.
+- `swarm-run.sh` enregistre le PID du processus pi dans `.swarm/agent-X/.pid` au démarrage.
 
 ---
 
@@ -105,5 +105,5 @@ Plus les dernières lignes du log.
 ## Fichiers créés / utilisés
 
 - **`.swarm/logs/events.log`** : log centralisé (créé automatiquement).
-- **`.swarm/agent-X/.pid`** : PID du processus Aider (créé par `swarm-run.sh`, supprimé par le watchdog si processus mort).
+- **`.swarm/agent-X/.pid`** : PID du processus pi (créé par `swarm-run.sh`, supprimé par le watchdog si processus mort).
 - **`.swarm/agent-X/.relaunch.log`** : sortie de la relance si `--relaunch` est utilisé.
