@@ -3,13 +3,19 @@
 # Rôle(s): Planner (décomposition requête → liste de tâches). Voir docs/ROLES.md.
 # Usage: ./scripts/swarm-prompt.sh "Ajoute l'authentification et un middleware de logs" [--model gpt-4o] [--test "make test"] ...
 #        echo "Refactoriser le module API" | ./scripts/swarm-prompt.sh --stdin [options...]
-# Prérequis: OPENAI_API_BASE (proxy LiteLLM), curl, jq. Optionnel: OPENAI_API_KEY si le proxy l'exige.
+# Prérequis: LITELLM_API_BASE (URL du proxy LiteLLM) ou OPENROUTER_API_KEY (OpenRouter) ; curl, jq.
 # Les options --test, --validate, --rollback-on-validate-fail, --on-conflict, --parallel sont transmises au coordinateur.
 
 set -e
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-API_BASE="${OPENAI_API_BASE:-}"
-API_KEY="${OPENAI_API_KEY:-}"
+API_BASE=""
+API_KEY=""
+if [ -n "${LITELLM_API_BASE:-}" ]; then
+  API_BASE="${LITELLM_API_BASE%/}"
+elif [ -n "${OPENROUTER_API_KEY:-}" ]; then
+  API_BASE="https://openrouter.ai/api"
+  API_KEY="${OPENROUTER_API_KEY}"
+fi
 MODEL="${SWARM_PROMPT_MODEL:-gpt-4o}"
 PROMPT_TEXT=""
 PIPELINE_OPTS=()
@@ -20,7 +26,7 @@ for a in "$@"; do
   [ "$a" = "-h" ] || [ "$a" = "--help" ] && {
     echo "Usage: $0 \"<demande en langage naturel>\" [--model MODEL] [--test \"cmd\"] [--validate \"cmd\"] [--rollback-on-validate-fail] [--on-conflict skip|reopen] [--parallel]"
     echo "       echo \"<demande>\" | $0 --stdin [options...]"
-    echo "  Décompose la demande en sous-tâches via le LLM (OPENAI_API_BASE) puis lance le coordinateur."
+    echo "  Décompose la demande en sous-tâches via le LLM (LITELLM_API_BASE ou OPENROUTER_API_KEY) puis lance le coordinateur."
     echo "  Options pipeline: --test, --validate, --rollback-on-validate-fail, --on-conflict, --parallel."
     exit 0
   }
@@ -40,7 +46,7 @@ while [ $# -gt 0 ]; do
     -h|--help)
       echo "Usage: $0 \"<demande en langage naturel>\" [--model MODEL] [--test \"cmd\"] [--validate \"cmd\"] [--rollback-on-validate-fail] [--on-conflict skip|reopen] [--parallel]"
       echo "       echo \"<demande>\" | $0 --stdin [options...]"
-      echo "  Décompose la demande en sous-tâches via le LLM (OPENAI_API_BASE) puis lance le coordinateur."
+      echo "  Décompose la demande en sous-tâches via le LLM (LITELLM_API_BASE ou OPENROUTER_API_KEY) puis lance le coordinateur."
       echo "  Options pipeline: --test, --validate, --rollback-on-validate-fail, --on-conflict, --parallel."
       exit 0 ;;
     *)         PROMPT_TEXT="$1"; shift ;;
@@ -52,7 +58,7 @@ if [ -n "$USE_STDIN" ]; then
 fi
 
 [ -n "$PROMPT_TEXT" ] || { echo "Donnez une demande (argument ou stdin avec --stdin)."; exit 1; }
-[ -n "$API_BASE" ] || { echo "Erreur: OPENAI_API_BASE non défini (ex. export OPENAI_API_BASE=http://proxy:4000)"; exit 1; }
+[ -n "$API_BASE" ] || { echo "Erreur: définir LITELLM_API_BASE (URL du proxy LiteLLM) ou OPENROUTER_API_KEY (voir docs)."; exit 1; }
 command -v curl >/dev/null 2>&1 || { echo "Erreur: curl requis (appel API)."; exit 1; }
 
 # Appel API chat completions (OpenAI-compatible / LiteLLM)
@@ -66,15 +72,17 @@ PAYLOAD=$(jq -n \
   --arg content "$USER_PROMPT" \
   '{model: $model, messages: [{role: "user", content: $content}], max_tokens: 500}')
 
-RESPONSE=$(curl -sS -X POST "${API_BASE%/}/v1/chat/completions" \
+CURL_EXTRA=()
+[ -n "$API_KEY" ] && CURL_EXTRA+=(-H "Authorization: Bearer $API_KEY")
+RESPONSE=$(curl -sS -X POST "${API_BASE}/v1/chat/completions" \
   -H "Content-Type: application/json" \
-  ${API_KEY:+ -H "Authorization: Bearer $API_KEY"} \
-  -d "$PAYLOAD") || { echo "Erreur: appel API échoué (vérifiez OPENAI_API_BASE et réseau)."; exit 1; }
+  "${CURL_EXTRA[@]}" \
+  -d "$PAYLOAD") || { echo "Erreur: appel API échoué (vérifiez LITELLM_API_BASE ou OPENROUTER_API_KEY et réseau)."; exit 1; }
 
 # Extraire le contenu (sous-tâches, une par ligne)
 CONTENT=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // empty')
 if [ -z "$CONTENT" ]; then
-  echo "Erreur: pas de réponse du LLM (vérifiez OPENAI_API_BASE, modèle, et éventuellement OPENAI_API_KEY)."
+  echo "Erreur: pas de réponse du LLM (vérifiez API_BASE/API_KEY et modèle)."
   echo "Réponse brute: $RESPONSE" | head -c 500
   exit 1
 fi

@@ -73,7 +73,7 @@ if [ -f "$TASK_FILE" ]; then
 fi
 
 echo "Lancement Aider dans $AGENT_DIR (modèle: $MODEL, rôle: $ROLE)"
-echo "OPENAI_API_BASE est utilisé si défini dans ton env."
+echo "Le proxy LLM est utilisé si configuré (voir doc config)."
 echo ""
 # Phase 4: enregistrer le PID pour le watchdog (après exec ce sera le PID d'aider)
 echo $$ > .pid

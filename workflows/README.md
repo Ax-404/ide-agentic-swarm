@@ -20,7 +20,7 @@ Définitions de workflows pour le moteur **`swarm-workflow.sh`**. Chaque fichier
 | `default.workflow` | Dispatch 2 issues puis pipeline (tests + skip conflits). À lancer quand des issues existent déjà. |
 | `autonomous.workflow` | Coordinate (création de 2 tâches exemples) + pipeline. Tout-en-un depuis une liste de titres. |
 | `staging.workflow` | Déploiement sur la branche staging (deploy-staging + pipeline). |
-| `prompt.workflow` | Entrée langage naturel : décomposition LLM puis coordinateur (OPENAI_API_BASE requis). |
+| `prompt.workflow` | Entrée langage naturel : décomposition LLM puis coordinateur (LITELLM_API_BASE ou OPENROUTER_API_KEY requis). |
 
 ## Usage
 

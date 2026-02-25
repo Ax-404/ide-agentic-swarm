@@ -220,7 +220,7 @@ git reset --hard HEAD~1
 | Action | Commande |
 |--------|----------|
 | **Coordinateur** : créer issues + lancer pipeline | `./scripts/swarm-coordinate.sh "Titre 1" "Titre 2"` ou `--file tasks.txt` |
-| **Un prompt (langage naturel)** : décomposition LLM → coordinateur | `./scripts/swarm-prompt.sh "Ajoute l'auth et les logs"` (OPENAI_API_BASE requis) |
+| **Un prompt (langage naturel)** : décomposition LLM → coordinateur | `./scripts/swarm-prompt.sh "Ajoute l'auth et les logs"` (LITELLM_API_BASE ou OPENROUTER_API_KEY requis) |
 | Lancer un agent headless (une tâche puis stop) | `./scripts/swarm-run-headless.sh agent-1 gpt-4o` |
 | Pipeline complet (dispatch + headless + merge) | `./scripts/swarm-pipeline.sh 2` |
 | Pipeline avec gate tests | `./scripts/swarm-pipeline.sh 2 --test "make test"` |
@@ -328,7 +328,7 @@ Un **seul prompt** en langage naturel peut déclencher tout le flux : le script 
 ### Commande
 
 ```bash
-export OPENAI_API_BASE="http://macmini.ton-tailnet.ts.net:4000"   # comme pour Aider
+export LITELLM_API_BASE="http://macmini.ton-tailnet.ts.net:4000"   # ou OPENROUTER_API_KEY pour OpenRouter
 ./scripts/swarm-prompt.sh "Ajoute l'authentification et un middleware de logs" [--model gpt-4o] [--test "make test"] [--on-conflict skip]
 ```
 
@@ -340,8 +340,7 @@ echo "Refactoriser le module API et ajouter des tests" | ./scripts/swarm-prompt.
 
 ### Prérequis
 
-- **OPENAI_API_BASE** : même URL que pour Aider (proxy LiteLLM).
-- **OPENAI_API_KEY** : optionnel si le proxy gère les clés côté serveur ; à définir si le proxy l’exige.
+- **LITELLM_API_BASE** (LiteLLM) ou **OPENROUTER_API_KEY** (OpenRouter) : voir [exemples-commandes.md](../exemples-commandes.md) section Prompt.
 - **curl**, **jq** : pour l’appel API et le parse de la réponse.
 - **Modèle** : `--model` ou variable `SWARM_PROMPT_MODEL` (défaut : `gpt-4o`).
 

@@ -7,7 +7,7 @@ Procédure reproductible pour faire travailler plusieurs Aider en parallèle dan
 ## Prérequis
 
 - Dépôt **git** initialisé avec au moins un commit (`git init && git add . && git commit -m "initial"`).
-- **Aider** installé et configuré (voir [config-litelmm-tailscale-aider.md](../config-litelmm-tailscale-aider.md)) : `OPENAI_API_BASE` pointant vers ton proxy sur le Mac Mini.
+- **Aider** installé et configuré (voir [config-litelmm-tailscale-aider.md](../config-litelmm-tailscale-aider.md)) : proxy configuré (Aider selon sa doc ; pour swarm-prompt.sh : `LITELLM_API_BASE` ou `OPENROUTER_API_KEY`).
 - **Phase 1** validée (proxy LiteLLM + Tailscale + Aider qui répond).
 - **Optionnel** : [Seeds](https://github.com/jayminwest/seeds) (CLI `sd`) pour une issue par sous-tâche ; [Mulch](https://github.com/jayminwest/mulch) pour l’expertise cumulée (sections 8 et 9).
 

@@ -42,7 +42,7 @@ Ce document décrit ce que l’on va faire pour le projet : un système agentiqu
 
 - [ ] Héberger le proxy LiteLLM sur le Mac Mini M2 (voir [config-litelmm-tailscale-aider.md](config-litelmm-tailscale-aider.md)).
 - [ ] Configurer Tailscale sur Mac Mini et MacBook ; vérifier la connectivité.
-- [ ] Configurer Aider sur le MacBook pour utiliser `OPENAI_API_BASE` vers l’URL Tailscale du Mac Mini.
+- [ ] Configurer Aider sur le MacBook pour utiliser l’URL du proxy (Tailscale du Mac Mini). Pour swarm-prompt.sh : LITELLM_API_BASE.
 - [ ] Tester plusieurs modèles (OpenAI, Anthropic, Kimi, GLM, MiniMax selon config) via Aider.
 - [ ] Valider latence et stabilité (depuis le LAN et depuis l’extérieur via Tailscale).
 
@@ -150,7 +150,7 @@ Objectif : rendre le swarm **autonome** — déclenchement sans humain, exécuti
 Pour tendre vers une autonomie encore plus poussée (« outil ultime »), il faudrait en plus :
 
 - **Résolution automatique des conflits (ou stratégie stricte)** *(lot 1 en place)* : en cas de conflit au merge, option **`--on-conflict skip`** (annuler le merge, logger, continuer les autres branches) ou **`--on-conflict reopen`** (idem + rouvrir l’issue Seeds pour re-dispatch). Stratégie recommandée : découper les tâches par fichier/module, merge ordonné. Voir [workflows/phase6-workflow.md §5](workflows/phase6-workflow.md) (gestion des conflits). *Reste possible* : résolution automatique (ex. `-X ours`/`theirs` ou outil de fusion).
-- **Une couche qui crée les issues et déclenche le pipeline** *(lot 2 + langage naturel en place)* : **`swarm-coordinate.sh`** (liste de titres ou `--file`). **`swarm-prompt.sh`** : entrée en **langage naturel** — appelle le LLM (OPENAI_API_BASE) pour décomposer la demande en sous-tâches, puis lance le coordinateur. Usage : `./scripts/swarm-prompt.sh "Ajoute l'auth et les logs"`. Voir [workflows/phase6-workflow.md §3 et §13](workflows/phase6-workflow.md).
+- **Une couche qui crée les issues et déclenche le pipeline** *(lot 2 + langage naturel en place)* : **`swarm-coordinate.sh`** (liste de titres ou `--file`). **`swarm-prompt.sh`** : entrée en **langage naturel** — appelle le LLM (LITELLM_API_BASE ou OPENROUTER_API_KEY) pour décomposer la demande en sous-tâches, puis lance le coordinateur. Usage : `./scripts/swarm-prompt.sh "Ajoute l'auth et les logs"`. Voir [workflows/phase6-workflow.md §3 et §13](workflows/phase6-workflow.md).
 - **Une politique claire de déploiement (staging/prod, alertes, coûts)** *(lot 3 en place)* : **Staging/prod** : script `swarm-deploy-staging.sh`. **Alertes** : `swarm-alert.sh` + `SWARM_ALERT_HOOK` et/ou `SWARM_SLACK_WEBHOOK_URL`. **Coûts** : `swarm-budget.sh` avec `SWARM_BUDGET_MAX`. Voir [workflows/phase6-workflow.md §9–11](workflows/phase6-workflow.md)
 
 ---

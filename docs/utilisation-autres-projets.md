@@ -39,7 +39,7 @@ Les scripts (`swarm-*.sh`) prennent leur **répertoire de travail** comme étant
    # ou en une commande (liste de tâches → issues Seeds → pipeline) :
    ./scripts/swarm-coordinate.sh "Tâche 1" "Tâche 2" --test "make test"
    # ou entrée en langage naturel (un prompt → LLM décompose en sous-tâches → coordinateur) :
-   export OPENAI_API_BASE="http://ton-proxy:4000"   # requis pour le prompt
+   export LITELLM_API_BASE="http://ton-proxy:4000"   # ou OPENROUTER_API_KEY pour swarm-prompt.sh
    ./scripts/swarm-prompt.sh "Ajoute l'authentification et les logs" --test "make test"
    # etc.
    ```
@@ -75,6 +75,6 @@ Ensuite, tout le swarm (dispatch, run, merge, etc.) s’utilise comme dans ide-a
 | Faire tourner le swarm sur **un projet existant** | Copier `scripts/`, `docs/`, `templates/`, `.vscode/`, et les règles `.gitignore` utiles dans la racine de ce projet, puis exécuter les commandes depuis cette racine. |
 | **Créer un nouveau projet** déjà équipé du swarm | Partir du repo ide-agentic (template ou clone), garder les dossiers swarm et y mettre le code du nouveau projet. |
 
-**Entrée par prompt (langage naturel)** : avec Seeds et un proxy LLM configuré (`OPENAI_API_BASE`), tu peux lancer tout le flux depuis une seule phrase : `./scripts/swarm-prompt.sh "Ta demande"` — le LLM décompose en sous-tâches, le coordinateur crée les issues et lance le pipeline. Voir [workflows/phase6-workflow.md §13](workflows/phase6-workflow.md) (entrée en langage naturel).
+**Entrée par prompt (langage naturel)** : avec Seeds et LLM configuré (`LITELLM_API_BASE` ou `OPENROUTER_API_KEY`), tu peux lancer tout le flux depuis une seule phrase : `./scripts/swarm-prompt.sh "Ta demande"` — le LLM décompose en sous-tâches, le coordinateur crée les issues et lance le pipeline. Voir [workflows/phase6-workflow.md §13](workflows/phase6-workflow.md) (entrée en langage naturel).
 
 Dans les deux cas, **le dossier qui contient `scripts/` est le projet sur lequel le swarm agit** : c’est là que sont créés `.swarm/`, `.seeds/`, etc., et que les agents modifient le code.

@@ -43,7 +43,7 @@ ide-agentic/
 │   ├── swarm-deploy-staging.sh # Lot 3 : pipeline sur branche staging puis merge main
 │   └── swarm-budget.sh       # Lot 3 : vérif budget (SWARM_BUDGET_MAX, alerte si dépassement)
 │   ├── swarm-workflow.sh     # Moteur de workflow (exécute une définition dans workflows/)
-│   ├── swarm-prompt.sh       # Entrée langage naturel : LLM décompose → coordinateur (OPENAI_API_BASE)
+│   ├── swarm-prompt.sh       # Entrée langage naturel : LLM décompose → coordinateur (LITELLM_API_BASE ou OPENROUTER_API_KEY)
 │   ├── swarm-handoff.sh     # Handoff automatisé : mail handoff → réassigner issue + TASK.md pour l'agent cible
 │   └── swarm-mail.sh         # Couche mail (retours en cours de tâche, handoffs, événements)
 ├── workflows/                # Définitions de workflows (format : étapes + args, séparateur --)
@@ -99,7 +99,7 @@ git checkout main && ./scripts/swarm-merge.sh --completed
 
 **Commandes Phase 6 (autonomie)**  
 ```bash
-./scripts/swarm-prompt.sh "Ajoute l'auth et les logs" [--test "make test"]   # Un prompt → LLM → coordinateur (OPENAI_API_BASE)
+./scripts/swarm-prompt.sh "Ajoute l'auth et les logs" [--test "make test"]   # Un prompt → LLM → coordinateur (LITELLM_API_BASE ou OPENROUTER_API_KEY)
 ./scripts/swarm-coordinate.sh "Titre 1" "Titre 2" [--test "make test"]   # Créer issues + lancer pipeline (lot 2)
 ./scripts/swarm-run-headless.sh agent-1 gpt-4o   # Une tâche (TASK.md) puis stop, sd close auto
 ./scripts/swarm-pipeline.sh 2                    # Dispatch 2 → headless → merge --completed
@@ -129,12 +129,12 @@ Détail : [docs/utilisation-autres-projets.md](docs/utilisation-autres-projets.m
 
 ## Dépannage
 
-Voir [docs/troubleshooting.md](docs/troubleshooting.md) : Aider ne répond pas (proxy, OPENAI_API_BASE), sd introuvable, aucune issue ouverte, conflit au merge, mail vide, commandes de diagnostic.
+Voir [docs/troubleshooting.md](docs/troubleshooting.md) : Aider ne répond pas (proxy), sd introuvable, aucune issue ouverte, conflit au merge, mail vide, commandes de diagnostic.
 
 ---
 
 ## Prérequis
 
 - Git (dépôt initialisé avec au moins un commit pour Phase 2).
-- Aider installé, `OPENAI_API_BASE` pointant vers le proxy (voir doc config).
+- Aider installé, proxy LLM configuré (voir doc config). Pour swarm-prompt.sh : `LITELLM_API_BASE` (LiteLLM) ou `OPENROUTER_API_KEY` (OpenRouter).
 - Optionnel : LiteLLM sur Mac Mini, Tailscale sur les deux machines ; **[Mulch](https://github.com/jayminwest/mulch)** (npm install -g mulch-cli) et **[Seeds](https://github.com/jayminwest/seeds)** (Bun, CLI `sd`) pour expertise et suivi d’issues — voir [docs/projet-roadmap.md](docs/projet-roadmap.md).

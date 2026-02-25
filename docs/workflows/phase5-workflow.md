@@ -55,7 +55,7 @@ curl -X POST "http://macmini.ton-tailnet.ts.net:4000/chat/completions" \
 
 ### Autres exemples
 
-- **CLI** : tout outil qui permet de définir `OPENAI_API_BASE` (ou équivalent) et un `model` : configurer l’URL du proxy et le nom de modèle.
+- **CLI** : tout outil qui permet de définir l’URL du proxy (ex. `LITELLM_API_BASE` ou `OPENROUTER_API_KEY`) et un `model` : configurer l’URL du proxy et le nom de modèle.
 - **Scripts (Python, Node, etc.)** : utiliser le SDK OpenAI en pointant `openai.api_base` (ou équivalent) vers l’URL du proxy ; le reste du code reste identique.
 
 Aider n’est qu’un client possible ; la logique d’orchestration (worktrees, Seeds, scripts swarm) reste utilisable avec d’autres clients tant qu’ils travaillent dans le même dépôt et peuvent lancer des commandes (terminal, scripts) pour dispatch, merge, etc.

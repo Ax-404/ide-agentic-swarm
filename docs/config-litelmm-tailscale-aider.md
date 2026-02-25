@@ -62,7 +62,7 @@ model_list:
   - model_name: gpt-4o
     litellm_params:
       model: openai/gpt-4o
-      api_key: os.environ/OPENAI_API_KEY
+      api_key: os.environ/LLM_API_KEY   # clé du provider (côté serveur)
 
   # Anthropic
   - model_name: claude-sonnet
@@ -85,7 +85,7 @@ model_list:
   #     api_key: os.environ/MINIMAX_API_KEY
 ```
 
-Les clés sont lues depuis les variables d’environnement (ex. `OPENAI_API_KEY`, etc.) — ne pas mettre les clés en clair dans le fichier.
+Les clés sont lues depuis les variables d’environnement (ex. `LLM_API_KEY`, `ANTHROPIC_API_KEY`) — ne pas mettre les clés en clair dans le fichier.
 
 ### Lancer le proxy (Mac Mini)
 
@@ -101,7 +101,7 @@ Avec Docker :
 docker run -d \
   --name litellm \
   -v /chemin/vers/config.yaml:/app/config.yaml \
-  -e OPENAI_API_KEY=xxx \
+  -e LLM_API_KEY=xxx \
   -e ANTHROPIC_API_KEY=xxx \
   -p 4000:4000 \
   ghcr.io/berriai/litellm:main-latest \
@@ -132,11 +132,8 @@ Utilise l’**adresse Tailscale du Mac Mini** (nom MagicDNS ou IP 100.x.x.x) :
 Dans `~/.zshrc` ou `~/.bashrc` (sur le MacBook) :
 
 ```bash
-# Proxy LiteLLM sur le Mac Mini (via Tailscale)
-export OPENAI_API_BASE="http://macmini.ton-tailnet.ts.net:4000"
-
-# Si le proxy attend une clé (optionnel, selon ta config LiteLLM)
-# export OPENAI_API_KEY="ta-clé-proxy-ou-sk-xxx"
+# Proxy LiteLLM sur le Mac Mini (via Tailscale) — pour swarm-prompt.sh
+export LITELLM_API_BASE="http://macmini.ton-tailnet.ts.net:4000"
 ```
 
 Puis :
@@ -147,7 +144,7 @@ source ~/.zshrc
 
 ### Lancer Aider
 
-Aider utilisera automatiquement `OPENAI_API_BASE` ; le modèle sera celui configuré sur le proxy (ex. `gpt-4o`, `claude-sonnet`, ou les alias que tu as définis dans `config.yaml`) :
+Configurer Aider pour utiliser l’URL du proxy (voir documentation Aider). Le modèle sera celui configuré sur le proxy (ex. `gpt-4o`, `claude-sonnet`, ou les alias définis dans `config.yaml`) :
 
 ```bash
 aider --model gpt-4o
@@ -163,7 +160,7 @@ Les appels partent du MacBook → Tailscale → Mac Mini (proxy) → API du prov
 
 | Étape | Où | Quoi |
 |-------|-----|------|
-| 1 | MacBook | Aider envoie une requête vers `OPENAI_API_BASE` (URL Tailscale du Mac Mini) |
+| 1 | MacBook | Aider envoie une requête vers l’URL du proxy (Tailscale du Mac Mini) |
 | 2 | Tailscale | Tunnel chiffré MacBook ↔ Mac Mini |
 | 3 | Mac Mini | LiteLLM reçoit la requête, appelle l’API du provider (OpenAI, etc.) |
 | 4 | Mac Mini | LiteLLM renvoie la réponse au MacBook |
@@ -195,8 +192,8 @@ Si le Mac Mini est éteint ou inaccessible, tu peux basculer Aider vers l’API 
 
 ```bash
 # Désactiver le proxy (pour utiliser OpenAI / autre directement)
-unset OPENAI_API_BASE
-# Puis configurer OPENAI_API_KEY etc. pour le provider direct
+unset LITELLM_API_BASE
+# Puis configurer le provider direct selon la doc Aider
 ```
 
-Ou utiliser un fichier `.env` ou un script qui active/désactive `OPENAI_API_BASE` selon que tu es sur le même réseau Tailscale que le Mac Mini ou non.
+Ou utiliser un fichier `.env` ou un script qui active/désactive `LITELLM_API_BASE` selon que tu es sur le même réseau Tailscale que le Mac Mini ou non.

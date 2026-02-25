@@ -12,12 +12,12 @@ Commandes à lancer **depuis la racine du projet** (après `cd mon-projet` ou ap
 | **Manuelle** (sans Seeds) : worktrees + TASK à la main | git, aider | `swarm-setup.sh N` → éditer TASK.md → `swarm-run.sh agent-X` → `swarm-merge.sh` |
 | **Manuelle avec Seeds** : issues déjà créées | git, sd, .seeds/, aider | `swarm-dispatch.sh N` → `swarm-run.sh agent-X` ou `swarm-pipeline.sh N` |
 | **Liste de tâches** (titres → issues + pipeline) | git, sd, aider, (jq pour merge/dashboard) | `swarm-coordinate.sh "T1" "T2"` ou `--file tasks.txt` + options |
-| **Prompt naturel** (phrase → LLM → sous-tâches → pipeline) | git, sd, aider, **OPENAI_API_BASE**, jq, curl | `swarm-prompt.sh "Ta demande"` + options |
+| **Prompt naturel** (phrase → LLM → sous-tâches → pipeline) | git, sd, aider, **LITELLM_API_BASE** ou **OPENROUTER_API_KEY**, jq, curl | `swarm-prompt.sh "Ta demande"` + options |
 | **Une issue précise** | git, sd, .seeds/, aider | `swarm-sling.sh <issue-id> [model]` |
 | **Diagnostic prérequis** | — | `./scripts/swarm-check.sh` ou `--require seeds|jq|aider` |
 | **Handoff agent → agent** (appliquer les handoffs mail) | git, sd, jq, .seeds/, mail | `swarm-handoff.sh` ou `swarm-handoff.sh list` |
 
-**Prérequis détaillés :** Seeds = `sd` + répertoire `.seeds/` (sinon `sd init`). Mulch = optionnel (expertise). jq = recommandé pour mail, prompt, lecture JSONL. Proxy = `OPENAI_API_BASE` pour Aider et pour `swarm-prompt.sh`.
+**Prérequis détaillés :** Seeds = `sd` + répertoire `.seeds/` (sinon `sd init`). Mulch = optionnel (expertise). jq = recommandé pour mail, prompt, lecture JSONL. Pour `swarm-prompt.sh` : **LITELLM_API_BASE** (proxy LiteLLM) ou **OPENROUTER_API_KEY** (OpenRouter) — voir section « Variables LLM » ci-dessous. Aider : configurer le proxy selon sa doc.
 
 ---
 
@@ -82,10 +82,16 @@ echo -e "Refactor module A\nAjouter cache Redis\nDoc README" > tasks.txt
 
 ## Prompt (langage naturel → sous-tâches → pipeline)
 
-Prérequis : `OPENAI_API_BASE` (URL du proxy LiteLLM ou API OpenAI-compatible).
+**Variables LLM (choix unique)** : `swarm-prompt.sh` lit l’env et choisit automatiquement **LiteLLM** (`LITELLM_API_BASE` = URL du proxy) ou **OpenRouter** (`OPENROUTER_API_KEY` = clé API). Priorité à LiteLLM si les deux sont définis. Le choix se fait en exportant l’une des deux variables (dans ce dépôt ou au build).
+
+Prérequis : `LITELLM_API_BASE` ou `OPENROUTER_API_KEY`.
 
 ```bash
-export OPENAI_API_BASE="http://macmini.ton-tailnet.ts.net:4000"
+# Option 1 — LiteLLM
+export LITELLM_API_BASE="http://macmini.ton-tailnet.ts.net:4000"
+
+# Option 2 — OpenRouter
+# export OPENROUTER_API_KEY="sk-or-v1-..."
 
 # Un prompt → le LLM décompose en sous-tâches → coordinateur → pipeline
 ./scripts/swarm-prompt.sh "Ajoute l'authentification JWT et un middleware de logs" --test "make test"
@@ -229,7 +235,7 @@ Après qu’un agent a envoyé un message handoff (ex. `--to agent-2 --type hand
 | `swarm-run-headless.sh agent-X [model]` | Aider non interactif (TASK.md, close/reopen issue). |
 | `swarm-pipeline.sh [N] [--test "cmd"] ...` | Dispatch → headless → merge (→ validate). |
 | `swarm-coordinate.sh "T1" "T2" [options]` | Crée issues + pipeline. |
-| `swarm-prompt.sh "demande" [options]` | LLM → sous-tâches → coordinateur (OPENAI_API_BASE). |
+| `swarm-prompt.sh "demande" [options]` | LLM → sous-tâches → coordinateur (LITELLM_API_BASE ou OPENROUTER_API_KEY). |
 | `swarm-merge.sh [--completed] [--test "cmd"]` | Merge des branches (optionnel : seulement si issue closed). |
 | `swarm-clean.sh [--merged-only] [--force]` | Supprime les worktrees. |
 | `swarm-workflow.sh [nom]` | Exécute un fichier workflows/*.workflow. |

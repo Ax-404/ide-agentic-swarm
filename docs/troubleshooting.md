@@ -10,20 +10,18 @@ Commandes de diagnostic et solutions courantes. À lancer **depuis la racine du 
 
 **À vérifier :**
 
-1. **Proxy / URL**  
-   `echo $OPENAI_API_BASE` doit pointer vers votre proxy LiteLLM ou API OpenAI-compatible (ex. `http://macmini.ton-tailnet.ts.net:4000`).  
-   Voir [config-litelmm-tailscale-aider.md](config-litelmm-tailscale-aider.md).
+1. **Variables LLM (swarm-prompt.sh)**  
+   Définir **LITELLM_API_BASE** (URL du proxy LiteLLM) ou **OPENROUTER_API_KEY** (clé OpenRouter). Si LiteLLM : `echo $LITELLM_API_BASE` doit pointer vers le proxy (ex. `http://macmini.ton-tailnet.ts.net:4000`). Voir [exemples-commandes.md](exemples-commandes.md) (section Prompt) et [config-litelmm-tailscale-aider.md](config-litelmm-tailscale-aider.md). Pour Aider, configurer le proxy selon sa doc.
 
 2. **Réseau**  
-   Si proxy sur une autre machine (ex. Mac Mini) : Tailscale ou VPN actif, test `curl "$OPENAI_API_BASE/v1/models"`.
+   Si proxy LiteLLM sur une autre machine : Tailscale ou VPN actif, test `curl "$LITELLM_API_BASE/v1/models"`. Avec OpenRouter, pas de proxy à joindre.
 
-3. **Clé API**  
-   Si le proxy exige une clé : `export OPENAI_API_KEY=sk-...`. Aider lit ces variables d’environnement.
 
 **Diagnostic :**
 ```bash
 ./scripts/swarm-check.sh
-curl -sS "${OPENAI_API_BASE%/}/v1/models" | head -5
+# Si LiteLLM :
+curl -sS "${LITELLM_API_BASE%/}/v1/models" | head -5
 ```
 
 ---
