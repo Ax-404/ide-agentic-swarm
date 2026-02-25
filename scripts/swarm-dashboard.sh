@@ -19,12 +19,15 @@ done
 
 show() {
   [ -d "$SWARM_DIR" ] || { echo "Aucun .swarm/ (aucun agent)."; return; }
-  printf "\n  Agent      Issue        Statut issue   PID    Actif\n"
-  printf "  ---------- ------------ -------------- ------ -----\n"
+  printf "\n  Agent      Rôle       Issue        Statut issue   PID    Actif\n"
+  printf "  ---------- ---------- ------------ -------------- ------ -----\n"
   n=0
   for dir in "$SWARM_DIR"/agent-*; do
     [ -d "$dir" ] || continue
     name="$(basename "$dir")"
+    role="—"
+    [ -f "${dir}/.role" ] && role=$(cat "${dir}/.role" 2>/dev/null) || true
+    [ -z "$role" ] && role="builder"
     issue="—"
     status="—"
     [ -f "${dir}/.issue_id" ] && issue=$(cat "${dir}/.issue_id")
@@ -46,7 +49,7 @@ show() {
         alive="non"
       fi
     fi
-    printf "  %-10s %-12s %-14s %-6s %s\n" "$name" "$issue" "$status" "$pid" "$alive"
+    printf "  %-10s %-10s %-12s %-14s %-6s %s\n" "$name" "$role" "$issue" "$status" "$pid" "$alive"
     n=$((n + 1))
   done
   [ "$n" -eq 0 ] && echo "  (aucun worktree agent-*)"
