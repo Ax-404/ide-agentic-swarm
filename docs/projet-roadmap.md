@@ -131,7 +131,7 @@ Objectif : rendre le swarm **autonome** — déclenchement sans humain, exécuti
 - **Overstory** : [github.com/jayminwest/overstory](https://github.com/jayminwest/overstory) — inspiration pour worktrees, mail, merge, rôles.
 - **Mulch** : [github.com/jayminwest/mulch](https://github.com/jayminwest/mulch) — expertise structurée pour agents (record/query/prime), git-native, multi-agent safe.
 - **Seeds** : [github.com/jayminwest/seeds](https://github.com/jayminwest/seeds) — tracker d’issues git-native pour workflows agents (CLI `sd`), remplace beads dans l’écosystème Overstory.
-- **pi** : [pi.dev](https://pi.dev) — agent coding, support multi-LLM / OpenAI-compatible.
+- **pi** : [pi.dev](https://pi.dev) — agent coding, support multi-LLM / OpenAI-compatible. Extension IDE : [pi-vs-claude-code](https://github.com/disler/pi-vs-claude-code).
 - **LiteLLM** : [docs.litellm.ai](https://docs.litellm.ai) — proxy et lib pour multi-providers.
 - **Configuration détaillée** : voir [config-litelmm-tailscale-aider.md](config-litelmm-tailscale-aider.md) dans ce dépôt.
 

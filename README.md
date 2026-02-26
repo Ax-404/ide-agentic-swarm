@@ -136,5 +136,5 @@ Voir [docs/troubleshooting.md](docs/troubleshooting.md) : pi / LLM ne répond pa
 ## Prérequis
 
 - Git (dépôt initialisé avec au moins un commit pour Phase 2).
-- pi installé (`npm install -g @mariozechner/pi-coding-agent`), proxy LLM configuré (voir doc config). Pour swarm-prompt.sh : `LITELLM_API_BASE` (LiteLLM) ou `OPENROUTER_API_KEY` (OpenRouter).
+- pi installé (`npm install -g @mariozechner/pi-coding-agent`), proxy LLM configuré (voir doc config). Pour swarm-prompt.sh : `LITELLM_API_BASE` (LiteLLM) ou `OPENROUTER_API_KEY` (OpenRouter). **Extension IDE** (VS Code / Cursor) : [pi-vs-claude-code](https://github.com/disler/pi-vs-claude-code).
 - Optionnel : LiteLLM sur Mac Mini, Tailscale sur les deux machines ; **[Mulch](https://github.com/jayminwest/mulch)** (npm install -g mulch-cli) et **[Seeds](https://github.com/jayminwest/seeds)** (Bun, CLI `sd`) pour expertise et suivi d’issues — voir [docs/projet-roadmap.md](docs/projet-roadmap.md).
