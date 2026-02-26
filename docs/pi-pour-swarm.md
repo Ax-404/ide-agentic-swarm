@@ -4,7 +4,7 @@ Ce document résume la vérification faite avec un clone temporaire de [pi-mono]
 
 **Clone temporaire :** `git clone https://github.com/badlogic/pi-mono.git .pi-mono-temp` (le dossier `.pi-mono-temp/` est dans `.gitignore`).
 
-**Extension IDE (VS Code / Cursor) :** [pi-vs-claude-code](https://github.com/disler/pi-vs-claude-code) — permet d’utiliser pi depuis l’éditeur.
+**Extension IDE (VS Code / Cursor) :** [pi-vs-claude-code](https://github.com/ax402/pi-vs-claude-code) — permet d’utiliser pi depuis l’éditeur.
 
 ---
 

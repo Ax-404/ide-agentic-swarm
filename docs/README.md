@@ -17,7 +17,7 @@ Index de la documentation du projet **ide-agentic**.
 | Document | Description |
 |----------|-------------|
 | [config-litelmm-tailscale-aider.md](config-litelmm-tailscale-aider.md) | Proxy LiteLLM sur Mac Mini M2, Tailscale, configuration pi sur MacBook M1. |
-| [pi-pour-swarm.md](pi-pour-swarm.md) | **pi** : CLI + extension IDE [pi-vs-claude-code](https://github.com/disler/pi-vs-claude-code) (VS Code / Cursor), vérification pour le swarm. |
+| [pi-pour-swarm.md](pi-pour-swarm.md) | **pi** : CLI + extension IDE [pi-vs-claude-code](https://github.com/ax402/pi-vs-claude-code) (VS Code / Cursor), vérification pour le swarm. |
 | [costs-litelmm.md](costs-litelmm.md) | **Coûts** : récupérer les coûts depuis LiteLLM et alimenter SWARM_CURRENT_SPEND / .swarm/costs/current_spend pour swarm-budget.sh. |
 
 ## Projet et roadmap
